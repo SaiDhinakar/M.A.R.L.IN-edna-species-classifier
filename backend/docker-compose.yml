@@ -1,0 +1,10 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./model:/app/model
+    environment:
+      - MODEL_PATH=/app/model/dnabert_finetuned
