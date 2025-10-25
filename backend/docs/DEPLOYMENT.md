@@ -52,8 +52,10 @@ docker-compose (root) topology:
 
 ```mermaid
 graph LR
-  FE[frontend:3000]\n(React dev) 
-  BE[backend:8000]\n(FastAPI)
+  FE[frontend:3000
+React dev]
+  BE[backend:8000
+FastAPI]
   MINIO[MinIO:9000/9001]
   REDIS[Redis:6379]
   VOL1[(./backend/data:/app/data)]
