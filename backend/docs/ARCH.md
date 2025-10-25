@@ -47,11 +47,14 @@ Containers and ports at a glance:
 
 ```mermaid
 graph LR
-	FE[Frontend\nReact+Vite\n:3000]
-	BE[Backend\nFastAPI\n:8000]
+	FE[Frontend
+    React+Vite : 3000]
+	BE[Backend
+    FastAPI :8000]
 	DB[(MongoDB)]
-	R[(Redis - planned\n:6379)]
-	S3[(MinIO\nS3:9000\nConsole:9001)]
+	R[(Redis - planned :6379)]
+	S3[(MinIO or S3:9000
+    Console:9001)]
 
 	FE -->|HTTP| BE
 	BE -->|Driver| DB
