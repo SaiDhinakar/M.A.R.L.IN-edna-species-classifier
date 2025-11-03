@@ -43,7 +43,7 @@ docker_settings = DockerSettings(
 
 @step
 def load_data_step(dataset_id: int, minio_path: str) -> Tuple[List[str], List[str]]:
-    """Load and extract sequences from tar.gz dataset."""
+    """Load and extract sequences from dataset (archive or raw FASTA/FASTQ)."""
     logger.info(f"Loading dataset {dataset_id} from {minio_path}")
     
     # Parse bucket and object name
@@ -51,38 +51,75 @@ def load_data_step(dataset_id: int, minio_path: str) -> Tuple[List[str], List[st
     bucket = parts[0]
     object_name = parts[1]
     
+    sequences = []
+    sequence_ids = []
+    
     # Download from MinIO
     with tempfile.TemporaryDirectory() as tmpdir:
-        local_file = os.path.join(tmpdir, "dataset.tar.gz")
+        # Determine file type from object name
+        filename = os.path.basename(object_name)
+        local_file = os.path.join(tmpdir, filename)
         minio_service.download_file(object_name, bucket, local_file)
         
-        # Extract tar.gz
-        extract_dir = os.path.join(tmpdir, "extracted")
-        os.makedirs(extract_dir, exist_ok=True)
+        # Check if it's a direct sequence file or an archive
+        if filename.endswith(('.fasta', '.fa', '.fna', '.fastq', '.fq', '.txt')):
+            # Direct sequence file - parse it directly
+            fmt = 'fastq' if filename.endswith(('.fastq', '.fq')) else 'fasta'
+            try:
+                for record in SeqIO.parse(local_file, fmt):
+                    sequences.append(str(record.seq))
+                    sequence_ids.append(record.id)
+                logger.info(f"Loaded {len(sequences)} sequences from direct file")
+            except Exception as e:
+                logger.error(f"Error parsing {filename}: {e}")
+                raise
+        else:
+            # Archive file - extract and parse
+            extract_dir = os.path.join(tmpdir, "extracted")
+            os.makedirs(extract_dir, exist_ok=True)
+            
+            try:
+                # Try to extract as tar.gz
+                if filename.endswith(('.tar.gz', '.tgz')):
+                    with tarfile.open(local_file, "r:gz") as tar:
+                        tar.extractall(extract_dir)
+                elif filename.endswith('.zip'):
+                    import zipfile
+                    with zipfile.ZipFile(local_file, 'r') as zip_ref:
+                        zip_ref.extractall(extract_dir)
+                elif filename.endswith('.gz'):
+                    import gzip
+                    import shutil
+                    with gzip.open(local_file, 'rb') as f_in:
+                        extracted_file = os.path.join(extract_dir, filename[:-3])
+                        with open(extracted_file, 'wb') as f_out:
+                            shutil.copyfile(f_in, f_out)
+                else:
+                    raise ValueError(f"Unsupported archive format: {filename}")
+                
+                # Find and parse all FASTA/FASTQ files
+                for root, dirs, files in os.walk(extract_dir):
+                    for file in files:
+                        if file.endswith(('.fasta', '.fa', '.fna', '.fastq', '.fq')):
+                            filepath = os.path.join(root, file)
+                            fmt = 'fastq' if file.endswith(('.fastq', '.fq')) else 'fasta'
+                            
+                            try:
+                                for record in SeqIO.parse(filepath, fmt):
+                                    sequences.append(str(record.seq))
+                                    sequence_ids.append(record.id)
+                            except Exception as e:
+                                logger.error(f"Error parsing {filepath}: {e}")
+                
+                logger.info(f"Loaded {len(sequences)} sequences from archive")
+            except Exception as e:
+                logger.error(f"Error extracting archive {filename}: {e}")
+                raise
         
-        with tarfile.open(local_file, "r:gz") as tar:
-            tar.extractall(extract_dir)
+        if len(sequences) == 0:
+            raise ValueError("No valid sequences found in the uploaded file")
         
-        # Find FASTA/FASTQ files and parse sequences
-        sequences = []
-        sequence_ids = []
-        
-        for root, dirs, files in os.walk(extract_dir):
-            for file in files:
-                if file.endswith(('.fasta', '.fa', '.fna', '.fastq', '.fq')):
-                    filepath = os.path.join(root, file)
-                    
-                    # Determine format
-                    fmt = 'fastq' if file.endswith(('.fastq', '.fq')) else 'fasta'
-                    
-                    try:
-                        for record in SeqIO.parse(filepath, fmt):
-                            sequences.append(str(record.seq))
-                            sequence_ids.append(record.id)
-                    except Exception as e:
-                        logger.error(f"Error parsing {filepath}: {e}")
-        
-        logger.info(f"Loaded {len(sequences)} sequences")
+        logger.info(f"Successfully loaded {len(sequences)} sequences")
         return sequences, sequence_ids
 
 

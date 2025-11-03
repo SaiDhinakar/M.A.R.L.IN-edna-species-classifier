@@ -136,7 +136,7 @@ async def list_pending_datasets(
 ):
     """List all pending datasets awaiting approval."""
     
-    query = db.query(Dataset).filter(Dataset.status == "uploaded")
+    query = db.query(Dataset).filter(Dataset.status.in_(["uploaded", "processed"]))
     
     total = query.count()
     datasets = query.order_by(Dataset.uploaded_at.desc())\
@@ -168,10 +168,10 @@ async def approve_dataset(
             detail="Dataset not found"
         )
     
-    if dataset.status != "uploaded":
+    if dataset.status not in ["uploaded", "processed", "completed", "processing"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Dataset is not in 'uploaded' status (current: {dataset.status})"
+            detail=f"Dataset cannot be approved in current status: {dataset.status}"
         )
     
     # Update dataset

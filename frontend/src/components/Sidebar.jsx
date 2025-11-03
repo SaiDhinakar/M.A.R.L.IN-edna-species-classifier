@@ -7,20 +7,36 @@ import {
   Settings,
   Menu,
   X,
-  Dna
+  Dna,
+  Database,
+  LogOut,
+  User,
+  Shield
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const navigation = [
     { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Search Data', href: '/search', icon: Search },
+    { name: 'Databases', href: '/databases', icon: Database },
+    { name: 'Search & Classify', href: '/search', icon: Search },
     { name: 'Submit Data', href: '/submit', icon: Upload },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
+
+  // Add admin dashboard only for admins
+  if (user?.role === 'admin') {
+    navigation.splice(4, 0, { 
+      name: 'Admin Dashboard', 
+      href: '/admin', 
+      icon: Shield 
+    });
+  }
 
   const isActive = (href) => location.pathname === href;
 
@@ -99,18 +115,40 @@ const Sidebar = () => {
           </nav>
 
           {/* User info at bottom */}
-          {!isCollapsed && (
-            <div className="p-4 border-t border-gray-100">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-3">
+          <div className="p-4 border-t border-gray-100 space-y-3">
+            {!isCollapsed && user && (
+              <Link
+                to="/profile"
+                onClick={() => setIsMobileOpen(false)}
+                className="block bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-3 hover:from-blue-100 hover:to-indigo-100 transition-all"
+              >
                 <div className="text-xs font-medium text-blue-900 mb-1">
-                  M.A.R.L.IN Pipeline
+                  {user.full_name || user.username}
                 </div>
                 <div className="text-xs text-blue-700">
-                  Version 1.0.0 - Marine Biodiversity Analysis
+                  {user.email || 'View Profile'}
                 </div>
-              </div>
-            </div>
-          )}
+                {user.role === 'admin' && (
+                  <div className="mt-2">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      Admin
+                    </span>
+                  </div>
+                )}
+              </Link>
+            )}
+            
+            <button
+              onClick={logout}
+              className={`
+                flex items-center px-4 py-3 text-sm font-medium rounded-2xl transition-all duration-200 w-full
+                text-red-600 hover:bg-red-50
+              `}
+            >
+              <LogOut className="h-5 w-5 flex-shrink-0" />
+              {!isCollapsed && <span className="ml-3">Logout</span>}
+            </button>
+          </div>
         </div>
       </aside>
     </>

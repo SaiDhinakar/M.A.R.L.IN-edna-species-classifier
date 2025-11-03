@@ -44,12 +44,12 @@ class TrainingWorkflow:
         minio_path: str
     ) -> Tuple[List[str], List[str]]:
         """
-        Load and extract sequences from MinIO archive.
+        Load and extract sequences from MinIO (handles both archives and direct files).
         Automatically converts BLAST databases to FASTA format if detected.
         
         Args:
             dataset_id: Dataset ID for logging
-            minio_path: Path to tar.gz file in MinIO
+            minio_path: Path to file in MinIO (can be archive or direct sequence file)
             
         Returns:
             Tuple of (sequences, sequence_ids)
@@ -58,23 +58,51 @@ class TrainingWorkflow:
         
         # Download from MinIO
         with tempfile.TemporaryDirectory() as tmpdir:
-            local_path = os.path.join(tmpdir, "archive.tar.gz")
-            
-            # Download file - correct order: object_name, bucket, file_path
             # Extract just the object name from the full minio_path
             object_name = minio_path.replace(f"{settings.minio_bucket_raw}/", "")
+            
+            # Keep original filename to determine file type
+            original_filename = os.path.basename(object_name)
+            local_path = os.path.join(tmpdir, original_filename)
+            
+            # Download file - correct order: object_name, bucket, file_path
             minio_service.download_file(
                 object_name,
                 settings.minio_bucket_raw,
                 local_path
             )
             
-            # Extract archive
+            # Check if it's a direct sequence file or an archive
             extract_dir = os.path.join(tmpdir, "extracted")
             os.makedirs(extract_dir, exist_ok=True)
             
-            with tarfile.open(local_path, "r:gz") as tar:
-                tar.extractall(extract_dir)
+            if original_filename.endswith(('.fasta', '.fa', '.fna', '.fastq', '.fq', '.txt')):
+                # Direct sequence file - just copy it to extract_dir
+                self.logger.info(f"Processing direct sequence file: {original_filename}")
+                import shutil
+                shutil.copy(local_path, os.path.join(extract_dir, original_filename))
+            elif original_filename.endswith(('.tar.gz', '.tgz')):
+                # Tar.gz archive
+                self.logger.info(f"Extracting tar.gz archive: {original_filename}")
+                with tarfile.open(local_path, "r:gz") as tar:
+                    tar.extractall(extract_dir)
+            elif original_filename.endswith('.zip'):
+                # Zip archive
+                self.logger.info(f"Extracting zip archive: {original_filename}")
+                import zipfile
+                with zipfile.ZipFile(local_path, 'r') as zip_ref:
+                    zip_ref.extractall(extract_dir)
+            elif original_filename.endswith('.gz'):
+                # Single gzip file
+                self.logger.info(f"Extracting gzip file: {original_filename}")
+                import gzip
+                import shutil
+                with gzip.open(local_path, 'rb') as f_in:
+                    extracted_filename = original_filename[:-3]  # Remove .gz extension
+                    with open(os.path.join(extract_dir, extracted_filename), 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+            else:
+                raise ValueError(f"Unsupported file format: {original_filename}")
             
             # Parse sequences
             sequences = []

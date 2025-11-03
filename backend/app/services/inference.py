@@ -97,25 +97,31 @@ class InferenceService:
                 
                 # Load species names from local FASTA file
                 try:
+                    import os as os_module
+                    from pathlib import Path
+                    
+                    # Get absolute path to backend directory
+                    backend_dir = Path(__file__).parent.parent.parent
+                    
                     # Check for local FASTA file (from BLAST extraction or direct upload)
                     local_fasta_paths = [
-                        'data/archives/16S_ribosomal_RNA.fasta',
-                        'data/archives/18S_fungal_sequences.fasta',
-                        'data/archives/28S_fungal_sequences.fasta',
+                        backend_dir / 'data' / 'archives' / '16S_ribosomal_RNA.fasta',
+                        backend_dir / 'data' / 'archives' / '18S_fungal_sequences.fasta',
+                        backend_dir / 'data' / 'archives' / '28S_fungal_sequences.fasta',
                     ]
                     
                     species_loaded = False
                     for fasta_path in local_fasta_paths:
-                        import os as os_module
-                        if os_module.path.exists(fasta_path):
+                        if fasta_path.exists():
                             # Build species mapping from FASTA headers
-                            self.species_mapping = build_species_mapping_from_fasta(fasta_path)
-                            logger.info(f"Loaded species names for {len(self.species_mapping)} sequences from {fasta_path}")
+                            logger.info(f"Loading species names from {fasta_path}")
+                            self.species_mapping = build_species_mapping_from_fasta(str(fasta_path))
+                            logger.info(f"Loaded species names for {len(self.species_mapping)} sequences from {fasta_path.name}")
                             species_loaded = True
                             break
                     
                     if not species_loaded:
-                        logger.warning(f"No local FASTA file found for species name extraction")
+                        logger.warning(f"No local FASTA file found for species name extraction. Checked: {[str(p) for p in local_fasta_paths]}")
                     
                 except Exception as e:
                     logger.warning(f"Could not load species names: {e}")
