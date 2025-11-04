@@ -24,9 +24,18 @@ from app.services.minio_service import minio_service
 from app.services.embedding_service import embedding_service
 from app.services.faiss_indexer import faiss_indexer
 from app.services.mlflow_service import mlflow_service
+from app.utils.logger import LoggerSetup
 
 
-logger = logging.getLogger(__name__)
+# Custom logger configuration
+logger = LoggerSetup.get_logger(
+    name="training_workflow",
+    level=logging.DEBUG,
+    log_file="logs/training_workflow.log",
+    max_bytes=5 * 1024 * 1024,  # 5MB
+    backup_count=3,
+    console_output=True
+)
 
 
 class TrainingWorkflow:
@@ -523,10 +532,14 @@ class TrainingWorkflow:
             'sequence_length': [len(s) for s in sequences]
         })
         
-        # Save to parquet
+        # Save to parquet and embeddings to numpy
         with tempfile.TemporaryDirectory() as tmpdir:
             parquet_path = os.path.join(tmpdir, f"dataset_{dataset_id}_processed.parquet")
             df.to_parquet(parquet_path, index=False)
+            
+            # Save embeddings as numpy array
+            embeddings_path = os.path.join(tmpdir, f"dataset_{dataset_id}_embeddings.npy")
+            np.save(embeddings_path, embeddings)
             
             # Upload to MinIO
             minio_path = minio_service.upload_file(
@@ -534,6 +547,15 @@ class TrainingWorkflow:
                 f"processed/dataset_{dataset_id}_processed.parquet",
                 settings.minio_bucket_processed
             )
+            
+            # Upload embeddings
+            embeddings_minio_path = minio_service.upload_file(
+                embeddings_path,
+                f"processed/dataset_{dataset_id}_embeddings.npy",
+                settings.minio_bucket_processed
+            )
+            
+            self.logger.info(f"Saved embeddings to {embeddings_minio_path}")
         
         self.logger.info(f"Saved results to {minio_path}")
         return minio_path
@@ -618,7 +640,7 @@ class TrainingWorkflow:
             return run_id, metrics, results_path
             
         except Exception as e:
-            self.logger.error(f"Training workflow failed for dataset {dataset_id}: {e}")
+            self.logger.error(f"Training workflow failed for dataset {dataset_id}: {e}", exc_info=True)
             raise
 
 

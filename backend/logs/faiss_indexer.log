@@ -1,0 +1,7 @@
+2025-11-04 23:41:19 - app.services.faiss_indexer - INFO - Loaded FAISS index with 125 vectors
+2025-11-04 23:58:47 - app.services.faiss_indexer - INFO - Loaded FAISS index with 125 vectors
+2025-11-05 00:12:16 - app.services.faiss_indexer - INFO - Created FAISS index with dimension 768
+2025-11-05 00:12:16 - app.services.faiss_indexer - INFO - Added 3692 vectors to FAISS index. Total: 3692
+2025-11-05 00:12:18 - app.services.faiss_indexer - INFO - Saved FAISS index to models/indices/model_edna_classifier_2.faiss
+2025-11-05 00:24:20 - app.services.faiss_indexer - INFO - Loaded FAISS index with 3692 vectors
+2025-11-05 00:26:50 - app.services.faiss_indexer - INFO - Loaded FAISS index with 3692 vectors

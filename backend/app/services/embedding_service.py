@@ -5,13 +5,21 @@ DNA sequence embedding service using PyTorch and Transformers.
 import torch
 import numpy as np
 from typing import List
-from transformers import AutoTokenizer, AutoModel
+from itertools import product
 import logging
 
 from app.core.config import settings
+from app.utils.logger import LoggerSetup
 
 
-logger = logging.getLogger(__name__)
+logger = LoggerSetup.get_logger(
+    name=__name__,
+    level=logging.DEBUG,
+    log_file="logs/embedding_service.log",
+    max_bytes=5 * 1024 * 1024,  # 5MB
+    backup_count=3,
+    console_output=True
+)
 
 
 class EmbeddingService:
@@ -29,6 +37,10 @@ class EmbeddingService:
             # Using a DNA-BERT style model (or can use simpler k-mer approach)
             # For MVP, we'll use a simple k-mer based embedding
             # In production, use models like "zhihan1996/DNA_bert_6" or similar
+            # Uncomment below if using transformers:
+            # from transformers import AutoTokenizer, AutoModel
+            # self.tokenizer = AutoTokenizer.from_pretrained("zhihan1996/DNA_bert_6")
+            # self.model = AutoModel.from_pretrained("zhihan1996/DNA_bert_6")
             
             logger.info(f"Embedding service initialized on device: {self.device}")
             logger.info("Using k-mer based embeddings for MVP")
@@ -53,7 +65,6 @@ class EmbeddingService:
         bases = ['A', 'T', 'G', 'C']
         
         # Generate all k-mers
-        from itertools import product
         all_kmers = [''.join(p) for p in product(bases, repeat=k)]
         kmer_to_idx = {kmer: idx for idx, kmer in enumerate(all_kmers)}
         

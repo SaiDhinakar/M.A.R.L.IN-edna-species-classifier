@@ -63,6 +63,11 @@ def create_model_from_training_run(training_run_id: int):
         print(f"   Version: {version}")
         print(f"   MinIO Path: models/{faiss_index_minio_path}")
         
+        # Deactivate all existing models first (only one should be active)
+        db.query(Model).update({"is_active": False})
+        db.commit()
+        print(f"   Deactivated all existing models")
+        
         new_model = Model(
             name=model_name,
             version=version,
@@ -73,8 +78,8 @@ def create_model_from_training_run(training_run_id: int):
             mlflow_experiment_id=None,
             metrics=metrics,
             hyperparameters={},
-            status="active",
-            is_active=True,
+            status="completed",  # Status represents training state, not deployment
+            is_active=True,      # This new model becomes the active one
             trained_by=training_run.initiated_by,
             created_at=datetime.utcnow()
         )

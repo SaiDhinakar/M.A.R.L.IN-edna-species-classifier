@@ -12,8 +12,16 @@ from pathlib import Path
 from app.core.config import settings
 from app.services.minio_service import minio_service
 
+from app.utils.logger import LoggerSetup
 
-logger = logging.getLogger(__name__)
+logger = LoggerSetup.get_logger(
+    name=__name__,
+    level=logging.INFO,
+    log_file="logs/faiss_indexer.log",
+    max_bytes=5 * 1024 * 1024,  # 5MB
+    backup_count=3,
+    console_output=True
+)
 
 
 class FAISSIndexer:

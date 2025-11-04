@@ -1,0 +1,76 @@
+2025-11-05 00:46:45 - app.api.search - INFO - Searching in dataset 2 for query '180037' (type: sequence_id)
+2025-11-05 00:46:45 - app.api.search - ERROR - Error searching sequences: 'MinIOService' object has no attribute 'settings'
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 70, in search_sequences
+    bucket_name=minio_service.settings.minio_bucket_datasets
+                ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MinIOService' object has no attribute 'settings'
+2025-11-05 00:47:17 - app.api.search - ERROR - Error listing taxonomies: 'MinIOService' object has no attribute 'settings'
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 253, in list_taxonomies
+    bucket_name=minio_service.settings.minio_bucket_datasets
+                ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MinIOService' object has no attribute 'settings'
+2025-11-05 00:48:49 - app.api.search - ERROR - Error listing taxonomies: 'MinIOService' object has no attribute 'settings'
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 253, in list_taxonomies
+    bucket_name=minio_service.settings.minio_bucket_datasets
+                ^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'MinIOService' object has no attribute 'settings'
+2025-11-05 00:49:59 - app.api.search - ERROR - Error listing taxonomies: MinIOService.download_file() got multiple values for argument 'bucket'
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 250, in list_taxonomies
+    minio_service.download_file(
+TypeError: MinIOService.download_file() got multiple values for argument 'bucket'
+2025-11-05 00:50:19 - app.api.search - ERROR - Error listing taxonomies: MinIOService.download_file() got an unexpected keyword argument 'bucket_name'
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 250, in list_taxonomies
+    minio_service.download_file(
+TypeError: MinIOService.download_file() got an unexpected keyword argument 'bucket_name'
+2025-11-05 00:50:37 - app.api.search - ERROR - Error listing taxonomies: MinIOService.download_file() missing 1 required positional argument: 'file_path'
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 250, in list_taxonomies
+    minio_service.download_file(
+TypeError: MinIOService.download_file() missing 1 required positional argument: 'file_path'
+2025-11-05 00:51:27 - app.api.search - ERROR - Error listing taxonomies: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874E40A598ADA74, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 250, in list_taxonomies
+    minio_service.download_file(
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/services/minio_service.py", line 99, in download_file
+    self.client.fget_object(bucket, object_name, file_path)
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 1122, in fget_object
+    stat = self.stat_object(
+           ^^^^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 2254, in stat_object
+    response = self._execute(
+               ^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 441, in _execute
+    region = self._get_region(bucket_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 498, in _get_region
+    response = self._url_open(
+               ^^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 427, in _url_open
+    raise response_error
+minio.error.S3Error: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874E40A598ADA74, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets
+2025-11-05 00:51:32 - app.api.search - ERROR - Error listing taxonomies: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874E40B87CC4D4A, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 250, in list_taxonomies
+    minio_service.download_file(
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/services/minio_service.py", line 99, in download_file
+    self.client.fget_object(bucket, object_name, file_path)
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 1122, in fget_object
+    stat = self.stat_object(
+           ^^^^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 2254, in stat_object
+    response = self._execute(
+               ^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 441, in _execute
+    region = self._get_region(bucket_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 498, in _get_region
+    response = self._url_open(
+               ^^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 427, in _url_open
+    raise response_error
+minio.error.S3Error: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874E40B87CC4D4A, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets

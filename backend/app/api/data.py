@@ -93,7 +93,7 @@ async def process_dataset_background(dataset_id: int, db: Session):
 @router.post("/upload", response_model=DatasetResponse, status_code=status.HTTP_201_CREATED)
 async def upload_dataset(
     background_tasks: BackgroundTasks,
-    file: UploadFile = File(..., description="Dataset file (.tar.gz)"),
+    file: UploadFile = File(..., description="Dataset file (.tar.gz or .fasta)"),
     description: Optional[str] = Form(None),
     sample_location: Optional[str] = Form(None),
     sample_depth: Optional[float] = Form(None),
@@ -203,28 +203,60 @@ async def list_datasets(
     page: int = 1,
     page_size: int = 20,
     status_filter: Optional[str] = None,
-    user_only: bool = False,
-    current_user: User = Depends(get_current_active_user),
+    current_user: Optional[User] = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
     List datasets with pagination.
     
-    - If user_only=True: Returns only current user's datasets
-    - If admin: Returns all datasets
-    - If regular user: Returns only approved datasets (public)
+    - Public access: Returns only approved datasets
+    - Authenticated users: Returns only approved datasets
+    - Admin with status_filter: Returns all datasets based on status_filter
     """
     
-    # Build query based on user role and filter
-    if user_only:
-        # Return only current user's datasets
-        query = db.query(Dataset).filter(Dataset.user_id == current_user.id)
-    elif current_user.role == "admin":
-        # Admins see all datasets
-        query = db.query(Dataset)
+    # Build query based on authentication and parameters
+    if current_user and current_user.role == "admin" and status_filter:
+        # Admin can see all datasets, filter by status if provided
+        query = db.query(Dataset).filter(Dataset.status == status_filter)
     else:
-        # Regular users see only approved datasets
+        # Public and authenticated users - only approved datasets
         query = db.query(Dataset).filter(Dataset.status == "approved")
+    
+    # Get total count
+    total = query.count()
+    
+    # Paginate
+    datasets = query.order_by(Dataset.uploaded_at.desc())\
+        .offset((page - 1) * page_size)\
+        .limit(page_size)\
+        .all()
+    
+    return DatasetList(
+        datasets=datasets,
+        total=total,
+        page=page,
+        page_size=page_size
+    )
+
+
+@router.get("/my-datasets", response_model=DatasetList)
+async def list_my_datasets(
+    page: int = 1,
+    page_size: int = 20,
+    status_filter: Optional[str] = None,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    List current user's own datasets with pagination.
+    Requires authentication.
+    
+    - Returns datasets uploaded by the current user
+    - Can filter by status (approved, rejected, processed, failed, etc.)
+    """
+    
+    # Query current user's datasets
+    query = db.query(Dataset).filter(Dataset.user_id == current_user.id)
     
     # Apply status filter if provided
     if status_filter:

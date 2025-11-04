@@ -141,14 +141,20 @@ class InferenceRequest(BaseModel):
 class SimilarSequence(BaseModel):
     sequence_id: str
     similarity: float
-    cluster_id: Optional[int] = None
+    cluster_id: Optional[int] = Field(
+        None, 
+        description="Cluster ID: -1 = noise/outlier, >= 0 = valid cluster, None = not clustered"
+    )
     taxonomy: Optional[str] = None
     species_name: Optional[str] = None
 
 
 class InferenceResponse(BaseModel):
     sequence_hash: str
-    cluster_id: Optional[int] = None
+    cluster_id: Optional[int] = Field(
+        None,
+        description="Predicted cluster ID: -1 = noise/outlier, >= 0 = valid cluster, None = no prediction"
+    )
     predicted_taxonomy: Optional[str] = None
     predicted_species: Optional[str] = None
     confidence: Optional[float] = None

@@ -1,0 +1,43 @@
+2025-11-05 00:09:24 - training_workflow - INFO - Loading dataset 2 from raw-datasets/users/1/1_20251104_183922_18S_fungal_sequences.fasta
+2025-11-05 00:09:24 - training_workflow - INFO - Processing direct sequence file: 1_20251104_183922_18S_fungal_sequences.fasta
+2025-11-05 00:09:24 - training_workflow - INFO - Parsing sequence file: 1_20251104_183922_18S_fungal_sequences.fasta (format: fasta)
+2025-11-05 00:09:24 - training_workflow - INFO - ✅ Loaded 3692 sequences from archive
+2025-11-05 00:09:24 - training_workflow - INFO - Preprocessing 3692 sequences
+2025-11-05 00:09:24 - training_workflow - INFO - Filtered to 580 valid sequences
+2025-11-05 00:09:35 - training_workflow - INFO - Loading dataset 3 from raw-datasets/users/1/1_20251104_183934_28S_fungal_sequences.fasta
+2025-11-05 00:09:35 - training_workflow - INFO - Processing direct sequence file: 1_20251104_183934_28S_fungal_sequences.fasta
+2025-11-05 00:09:35 - training_workflow - INFO - Parsing sequence file: 1_20251104_183934_28S_fungal_sequences.fasta (format: fasta)
+2025-11-05 00:09:35 - training_workflow - INFO - ✅ Loaded 11345 sequences from archive
+2025-11-05 00:09:35 - training_workflow - INFO - Preprocessing 11345 sequences
+2025-11-05 00:09:36 - training_workflow - INFO - Filtered to 9037 valid sequences
+2025-11-05 00:09:52 - training_workflow - INFO - Loading dataset 4 from raw-datasets/users/1/1_20251104_183951_LSU_eukaryote_rRNA.fasta
+2025-11-05 00:09:52 - training_workflow - INFO - Processing direct sequence file: 1_20251104_183951_LSU_eukaryote_rRNA.fasta
+2025-11-05 00:09:52 - training_workflow - INFO - Parsing sequence file: 1_20251104_183951_LSU_eukaryote_rRNA.fasta (format: fasta)
+2025-11-05 00:09:52 - training_workflow - INFO - ✅ Loaded 6575 sequences from archive
+2025-11-05 00:09:52 - training_workflow - INFO - Preprocessing 6575 sequences
+2025-11-05 00:09:52 - training_workflow - INFO - Filtered to 9 valid sequences
+2025-11-05 00:11:50 - training_workflow - INFO - Starting training workflow for dataset 2
+2025-11-05 00:11:50 - training_workflow - INFO - Loading dataset 2 from raw-datasets/users/1/1_20251104_183922_18S_fungal_sequences.fasta
+2025-11-05 00:11:50 - training_workflow - INFO - Processing direct sequence file: 1_20251104_183922_18S_fungal_sequences.fasta
+2025-11-05 00:11:50 - training_workflow - INFO - Parsing sequence file: 1_20251104_183922_18S_fungal_sequences.fasta (format: fasta)
+2025-11-05 00:11:50 - training_workflow - INFO - ✅ Loaded 3692 sequences from archive
+2025-11-05 00:11:50 - training_workflow - INFO - Preprocessing 3692 sequences
+2025-11-05 00:11:50 - training_workflow - INFO - Filtered to 3692 valid sequences
+2025-11-05 00:11:50 - training_workflow - INFO - Generating embeddings for 3692 sequences
+2025-11-05 00:11:55 - training_workflow - INFO - Generated embeddings with shape (3692, 768)
+2025-11-05 00:11:55 - training_workflow - INFO - Clustering 3692 embeddings
+2025-11-05 00:12:16 - training_workflow - INFO - Found 355 clusters, 1508 noise points
+2025-11-05 00:12:16 - training_workflow - INFO - Building FAISS index for 3692 vectors
+2025-11-05 00:12:18 - training_workflow - INFO - Saved FAISS index to models/indices/model_edna_classifier_2.faiss
+2025-11-05 00:12:18 - training_workflow - INFO - Calculating metrics
+2025-11-05 00:12:18 - training_workflow - INFO - Metrics: {'num_sequences': 3692, 'num_clusters': 355, 'num_noise_points': 1508, 'shannon_diversity': 4.00339930678751, 'simpson_diversity': 0.16875129852370327, 'avg_sequence_length': 1332.8401950162513, 'embedding_dim': 768}
+2025-11-05 00:12:18 - training_workflow - INFO - Logging to MLflow
+2025-11-05 00:12:19 - training_workflow - INFO - MLflow run ID: c728f5bdee1e4fb6a054e56c9749f42a
+2025-11-05 00:12:19 - training_workflow - INFO - Saving results
+2025-11-05 00:12:20 - training_workflow - INFO - Saved embeddings to processed/processed/dataset_2_embeddings.npy
+2025-11-05 00:12:20 - training_workflow - INFO - Saved results to processed/processed/dataset_2_processed.parquet
+2025-11-05 00:12:20 - training_workflow - INFO - Training workflow completed successfully for dataset 2
+2025-11-05 00:12:20 - training_workflow - INFO -   - MLflow run ID: c728f5bdee1e4fb6a054e56c9749f42a
+2025-11-05 00:12:20 - training_workflow - INFO -   - FAISS index: models/indices/model_edna_classifier_2.faiss
+2025-11-05 00:12:20 - training_workflow - INFO -   - Results: processed/processed/dataset_2_processed.parquet
+2025-11-05 00:12:20 - training_workflow - INFO -   - Metrics: {'num_sequences': 3692, 'num_clusters': 355, 'num_noise_points': 1508, 'shannon_diversity': 4.00339930678751, 'simpson_diversity': 0.16875129852370327, 'avg_sequence_length': 1332.8401950162513, 'embedding_dim': 768}

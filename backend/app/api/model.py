@@ -120,13 +120,16 @@ async def get_model_info(
     return inference_service.get_model_info()
 
 
-@router.post("/load/{model_id}")
-async def load_model(
+@router.post("/activate/{model_id}")
+async def activate_model(
     model_id: int,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """Load a specific model version."""
+    """
+    Mark a model as the active model (for auto-loading).
+    This does NOT load the model into memory - use /load endpoint for that.
+    """
     
     model = db.query(Model).filter(Model.id == model_id).first()
     
@@ -136,19 +139,88 @@ async def load_model(
             detail="Model not found"
         )
     
-    if model.status != "completed":
+    if model.status not in ["completed", "active"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Model is not ready (status: {model.status})"
+            detail=f"Model training not completed (status: {model.status})"
         )
     
     try:
-        index_name = f"model_{model.name}_{model.id}"
-        inference_service.load_model(model.version, index_name)
+        # Deactivate all other models
+        db.query(Model).update({"is_active": False})
+        
+        # Activate this model
+        model.is_active = True
+        db.commit()
+        
+        logger.info(f"Activated model {model.id} ({model.name} {model.version})")
+        
+        return {
+            "message": f"Model {model.name} version {model.version} is now active",
+            "model_id": model.id,
+            "note": "Model is marked as active but not loaded. Use /load endpoint to load it into memory."
+        }
+    except Exception as e:
+        logger.error(f"Error activating model: {e}")
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to activate model: {str(e)}"
+        )
+
+
+@router.post("/load/{model_id}")
+async def load_model(
+    model_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Load a specific model version into memory for inference."""
+    
+    model = db.query(Model).filter(Model.id == model_id).first()
+    
+    if not model:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Model not found"
+        )
+    
+    # Check if training completed successfully
+    if model.status not in ["completed", "active"]:  # Support legacy 'active' status
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Model training not completed (status: {model.status})"
+        )
+    
+    try:
+        # Extract index name from minio_path
+        # minio_path format: indices/model_edna_classifier_v1_2.faiss
+        minio_path = model.minio_path
+        if minio_path.endswith('.faiss'):
+            index_name = minio_path.split('/')[-1].replace('.faiss', '')
+        else:
+            # Fallback: construct from model name and id
+            index_name = f"model_{model.name}_{model.id}"
+        
+        # Get dataset_id for loading cluster metadata
+        from app.models.database_models import TrainingRun
+        training_run = db.query(TrainingRun).filter(TrainingRun.model_id == model.id).first()
+        dataset_id = training_run.dataset_id if training_run else None
+        
+        logger.info(f"Loading model '{model.name}' (ID: {model.id}) with index '{index_name}', dataset_id={dataset_id}")
+        
+        inference_service.load_model(model.version, index_name, dataset_id=dataset_id)
+        
+        # Mark this model as active and others as inactive
+        db.query(Model).update({"is_active": False})
+        model.is_active = True
+        db.commit()
         
         return {
             "message": f"Successfully loaded model {model.name} version {model.version}",
-            "model_id": model.id
+            "model_id": model.id,
+            "index_name": index_name,
+            "dataset_id": dataset_id
         }
     except Exception as e:
         logger.error(f"Error loading model: {e}")

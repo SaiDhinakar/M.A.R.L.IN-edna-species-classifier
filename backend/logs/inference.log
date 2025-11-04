@@ -1,0 +1,93 @@
+2025-11-04 23:41:20 - inference_service - INFO - Loaded metadata for 125 sequences from dataset 1
+2025-11-04 23:41:20 - inference_service - INFO - Loading species names from /run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/data/archives/16S_ribosomal_RNA.fasta
+2025-11-04 23:41:20 - inference_service - INFO - Loaded species names for 27354 sequences from 16S_ribosomal_RNA.fasta
+2025-11-04 23:41:21 - inference_service - INFO - Loaded embeddings with shape (125, 768) from dataset 1
+2025-11-04 23:41:21 - inference_service - INFO - Loaded model version v20251104_172759 with index model_edna_classifier_1
+2025-11-04 23:41:21 - inference_service - INFO - Retrieved result from cache for sequence d60b1165
+2025-11-04 23:42:24 - inference_service - INFO - Retrieved result from cache for sequence d60b1165
+2025-11-04 23:42:44 - inference_service - INFO - Retrieved result from cache for sequence d60b1165
+2025-11-04 23:43:19 - inference_service - INFO - Retrieved result from cache for sequence d60b1165
+2025-11-04 23:44:04 - inference_service - DEBUG - Starting inference for sequence 4767e003
+2025-11-04 23:44:04 - inference_service - DEBUG - Generated embedding with shape (768,)
+2025-11-04 23:44:04 - inference_service - DEBUG - Found 5 similar sequences
+2025-11-04 23:44:04 - inference_service - DEBUG - Raw similarities: [0.13272535800933838, 0.11276572942733765, 0.10241419076919556, 0.07044774293899536, -0.008368492126464844]
+2025-11-04 23:44:04 - inference_service - DEBUG - Seq NR_180037.1: similarity=0.1327, vote_weight=0.1327, cluster=None
+2025-11-04 23:44:04 - inference_service - DEBUG - Seq NR_180038.1: similarity=0.1128, vote_weight=0.1128, cluster=None
+2025-11-04 23:44:04 - inference_service - DEBUG - Seq NR_180036.1: similarity=0.1024, vote_weight=0.1024, cluster=None
+2025-11-04 23:44:04 - inference_service - DEBUG - Seq NR_179969.1: similarity=0.0704, vote_weight=0.0704, cluster=None
+2025-11-04 23:44:04 - inference_service - DEBUG - Seq NR_125649.1: similarity=-0.0084, vote_weight=0.0000, cluster=None
+2025-11-04 23:44:04 - inference_service - INFO - Using fallback: top match species=Paraburkholderia agricolaris, similarity=0.1327
+2025-11-04 23:44:04 - inference_service - INFO - Final prediction - cluster: None, species: Paraburkholderia agricolaris, confidence: 0.133
+2025-11-04 23:44:04 - inference_service - INFO - Inference completed in 0.185s
+2025-11-04 23:46:25 - inference_service - DEBUG - Starting inference for sequence 2b27d3cb
+2025-11-04 23:46:25 - inference_service - DEBUG - Generated embedding with shape (768,)
+2025-11-04 23:46:25 - inference_service - DEBUG - Found 5 similar sequences
+2025-11-04 23:46:25 - inference_service - DEBUG - Raw similarities: [-0.04203200340270996, -0.16841578483581543, -0.22881817817687988, -0.2766718864440918, -0.2803323268890381]
+2025-11-04 23:46:25 - inference_service - DEBUG - Seq NR_042248.2: similarity=-0.0420, vote_weight=0.0000, cluster=4
+2025-11-04 23:46:25 - inference_service - DEBUG - Seq NR_199424.1: similarity=-0.1684, vote_weight=0.0000, cluster=4
+2025-11-04 23:46:25 - inference_service - DEBUG - Seq NR_181858.1: similarity=-0.2288, vote_weight=0.0000, cluster=4
+2025-11-04 23:46:25 - inference_service - DEBUG - Seq NR_181392.1: similarity=-0.2767, vote_weight=0.0000, cluster=None
+2025-11-04 23:46:25 - inference_service - DEBUG - Seq NR_178831.1: similarity=-0.2803, vote_weight=0.0000, cluster=None
+2025-11-04 23:46:25 - inference_service - INFO - Using fallback: top match species=Atopococcus tabaci, similarity=-0.0420
+2025-11-04 23:46:25 - inference_service - INFO - Final prediction - cluster: 4, species: Atopococcus tabaci, confidence: 0.000
+2025-11-04 23:46:25 - inference_service - INFO - Inference completed in 0.003s
+2025-11-04 23:46:37 - inference_service - DEBUG - Starting inference for sequence f326b017
+2025-11-04 23:46:37 - inference_service - DEBUG - Generated embedding with shape (768,)
+2025-11-04 23:46:37 - inference_service - DEBUG - Found 5 similar sequences
+2025-11-04 23:46:37 - inference_service - DEBUG - Raw similarities: [-0.1269620656967163, -0.1648087501525879, -0.22956275939941406, -0.2529946565628052, -0.2604261636734009]
+2025-11-04 23:46:37 - inference_service - DEBUG - Seq NR_042248.2: similarity=-0.1270, vote_weight=0.0000, cluster=4
+2025-11-04 23:46:37 - inference_service - DEBUG - Seq NR_199424.1: similarity=-0.1648, vote_weight=0.0000, cluster=4
+2025-11-04 23:46:37 - inference_service - DEBUG - Seq NR_178371.1: similarity=-0.2296, vote_weight=0.0000, cluster=None
+2025-11-04 23:46:37 - inference_service - DEBUG - Seq NR_177730.1: similarity=-0.2530, vote_weight=0.0000, cluster=0
+2025-11-04 23:46:37 - inference_service - DEBUG - Seq NR_181858.1: similarity=-0.2604, vote_weight=0.0000, cluster=4
+2025-11-04 23:46:37 - inference_service - INFO - Using fallback: top match species=Atopococcus tabaci, similarity=-0.1270
+2025-11-04 23:46:37 - inference_service - INFO - Final prediction - cluster: 4, species: Atopococcus tabaci, confidence: 0.000
+2025-11-04 23:46:37 - inference_service - INFO - Inference completed in 0.005s
+2025-11-04 23:46:50 - inference_service - DEBUG - Starting inference for sequence bce26a65
+2025-11-04 23:46:50 - inference_service - DEBUG - Generated embedding with shape (768,)
+2025-11-04 23:46:50 - inference_service - DEBUG - Found 5 similar sequences
+2025-11-04 23:46:50 - inference_service - DEBUG - Raw similarities: [-0.7090426683425903, -0.7903429269790649, -0.8029342889785767, -0.8333330154418945, -0.8377783298492432]
+2025-11-04 23:46:50 - inference_service - DEBUG - Seq NR_125448.1: similarity=-0.7090, vote_weight=0.0000, cluster=None
+2025-11-04 23:46:50 - inference_service - DEBUG - Seq NR_114677.1: similarity=-0.7903, vote_weight=0.0000, cluster=3
+2025-11-04 23:46:50 - inference_service - DEBUG - Seq NR_179600.1: similarity=-0.8029, vote_weight=0.0000, cluster=None
+2025-11-04 23:46:50 - inference_service - DEBUG - Seq NR_178831.1: similarity=-0.8333, vote_weight=0.0000, cluster=None
+2025-11-04 23:46:50 - inference_service - DEBUG - Seq NR_181510.1: similarity=-0.8378, vote_weight=0.0000, cluster=1
+2025-11-04 23:46:50 - inference_service - INFO - Using fallback: top match species=Lactobacillus psittaci, similarity=-0.7090
+2025-11-04 23:46:50 - inference_service - INFO - Final prediction - cluster: None, species: Lactobacillus psittaci, confidence: 0.000
+2025-11-04 23:46:50 - inference_service - INFO - Inference completed in 0.003s
+2025-11-04 23:47:14 - inference_service - DEBUG - Starting inference for sequence 3a881616
+2025-11-04 23:47:14 - inference_service - DEBUG - Generated embedding with shape (768,)
+2025-11-04 23:47:14 - inference_service - DEBUG - Found 5 similar sequences
+2025-11-04 23:47:14 - inference_service - DEBUG - Raw similarities: [-0.12197351455688477, -0.14475572109222412, -0.1450355052947998, -0.16480755805969238, -0.24267911911010742]
+2025-11-04 23:47:14 - inference_service - DEBUG - Seq NR_178900.1: similarity=-0.1220, vote_weight=0.0000, cluster=3
+2025-11-04 23:47:14 - inference_service - DEBUG - Seq NR_178403.1: similarity=-0.1448, vote_weight=0.0000, cluster=4
+2025-11-04 23:47:14 - inference_service - DEBUG - Seq NR_179093.1: similarity=-0.1450, vote_weight=0.0000, cluster=None
+2025-11-04 23:47:14 - inference_service - DEBUG - Seq NR_181048.1: similarity=-0.1648, vote_weight=0.0000, cluster=3
+2025-11-04 23:47:14 - inference_service - DEBUG - Seq NR_169410.1: similarity=-0.2427, vote_weight=0.0000, cluster=3
+2025-11-04 23:47:14 - inference_service - INFO - Using fallback: top match species=Planctomonas psychrotolerans, similarity=-0.1220
+2025-11-04 23:47:14 - inference_service - INFO - Final prediction - cluster: 3, species: Planctomonas psychrotolerans, confidence: 0.000
+2025-11-04 23:47:14 - inference_service - INFO - Inference completed in 0.003s
+2025-11-04 23:47:28 - inference_service - DEBUG - Starting inference for sequence 18ce9c10
+2025-11-04 23:47:28 - inference_service - DEBUG - Generated embedding with shape (768,)
+2025-11-04 23:47:28 - inference_service - DEBUG - Found 5 similar sequences
+2025-11-04 23:47:28 - inference_service - DEBUG - Raw similarities: [0.23182642459869385, 0.2194817066192627, 0.1423715353012085, -0.027252912521362305, -0.09090924263000488]
+2025-11-04 23:47:28 - inference_service - DEBUG - Seq NR_180036.1: similarity=0.2318, vote_weight=0.2318, cluster=None
+2025-11-04 23:47:28 - inference_service - DEBUG - Seq NR_180038.1: similarity=0.2195, vote_weight=0.2195, cluster=None
+2025-11-04 23:47:28 - inference_service - DEBUG - Seq NR_180037.1: similarity=0.1424, vote_weight=0.1424, cluster=None
+2025-11-04 23:47:28 - inference_service - DEBUG - Seq NR_179107.1: similarity=-0.0273, vote_weight=0.0000, cluster=None
+2025-11-04 23:47:28 - inference_service - DEBUG - Seq NR_199984.1: similarity=-0.0909, vote_weight=0.0000, cluster=None
+2025-11-04 23:47:28 - inference_service - INFO - Using fallback: top match species=Paraburkholderia bonniea, similarity=0.2318
+2025-11-04 23:47:28 - inference_service - INFO - Final prediction - cluster: None, species: Paraburkholderia bonniea, confidence: 0.232
+2025-11-04 23:47:28 - inference_service - INFO - Inference completed in 0.003s
+2025-11-04 23:56:56 - inference_service - INFO - Retrieved result from cache for sequence 18ce9c10
+2025-11-05 00:24:21 - inference_service - INFO - Loaded metadata for 3692 sequences from dataset 2
+2025-11-05 00:24:21 - inference_service - INFO - Loading species names from /run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/data/archives/16S_ribosomal_RNA.fasta
+2025-11-05 00:24:22 - inference_service - INFO - Loaded species names for 27354 sequences from 16S_ribosomal_RNA.fasta
+2025-11-05 00:24:22 - inference_service - INFO - Loaded embeddings with shape (3692, 768) from dataset 2
+2025-11-05 00:24:22 - inference_service - INFO - Loaded model version v20251104_184220 with index model_edna_classifier_2
+2025-11-05 00:26:51 - inference_service - INFO - Loaded metadata for 3692 sequences from dataset 2
+2025-11-05 00:26:51 - inference_service - INFO - Loading species names from /run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/data/archives/16S_ribosomal_RNA.fasta
+2025-11-05 00:26:52 - inference_service - INFO - Loaded species names for 27354 sequences from 16S_ribosomal_RNA.fasta
+2025-11-05 00:26:53 - inference_service - INFO - Loaded embeddings with shape (3692, 768) from dataset 2
+2025-11-05 00:26:53 - inference_service - INFO - Loaded model version v20251104_184220 with index model_edna_classifier_2
+2025-11-05 00:28:15 - inference_service - INFO - Retrieved result from cache for sequence 18ce9c10
