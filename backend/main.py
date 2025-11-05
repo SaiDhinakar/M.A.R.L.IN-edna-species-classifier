@@ -14,7 +14,7 @@ import logging
 from app.core.config import settings
 from app.database.session import init_db
 from app.models.schemas import HealthCheck
-from app.api import auth, data, admin, model, search, visualize
+from app.api import auth, data, admin, model, search, visualize, system
 
 
 # Configure logging
@@ -145,6 +145,7 @@ app.include_router(admin.router, prefix=settings.api_prefix)
 app.include_router(model.router, prefix=settings.api_prefix)
 app.include_router(search.router, prefix=settings.api_prefix)
 app.include_router(visualize.router, prefix=settings.api_prefix)
+app.include_router(system.router, prefix=settings.api_prefix)
 
 
 if __name__ == "__main__":

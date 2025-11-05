@@ -219,39 +219,82 @@ def index_step(
 def calculate_metrics_step(
     embeddings: np.ndarray,
     cluster_labels: np.ndarray,
-    sequences: List[str]
+    sequences: List[str],
+    min_cluster_size: int = 5
 ) -> Dict[str, Any]:
-    """Calculate biodiversity and clustering metrics."""
-    logger.info("Calculating metrics")
+    """Calculate comprehensive model evaluation metrics."""
+    logger.info("=" * 80)
+    logger.info("Calculating comprehensive model evaluation metrics")
+    logger.info("=" * 80)
     
-    n_clusters = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
-    n_noise = list(cluster_labels).count(-1)
+    from app.utils.model_evaluator import evaluate_model
     
-    # Shannon diversity index
-    from collections import Counter
-    cluster_counts = Counter(cluster_labels)
-    total = len(cluster_labels)
+    # Calculate sequence lengths
+    sequence_lengths = np.array([len(s) for s in sequences])
     
-    shannon_index = 0.0
-    for count in cluster_counts.values():
-        if count > 0:
-            proportion = count / total
-            shannon_index -= proportion * np.log(proportion)
+    # Perform comprehensive evaluation
+    evaluation = evaluate_model(
+        embeddings=embeddings,
+        cluster_labels=cluster_labels,
+        sequence_lengths=sequence_lengths,
+        true_labels=None,  # No ground truth available for unsupervised clustering
+        min_cluster_size=min_cluster_size
+    )
     
-    # Simpson index
-    simpson_index = sum((count / total) ** 2 for count in cluster_counts.values())
+    # Extract key metrics for backward compatibility
+    clustering_metrics = evaluation.get('clustering', {})
+    diversity_metrics = evaluation.get('diversity', {})
     
+    # Combine into flat metrics dict for MLflow/DB storage
     metrics = {
-        "num_sequences": len(sequences),
-        "num_clusters": n_clusters,
-        "num_noise_points": n_noise,
-        "shannon_diversity": float(shannon_index),
-        "simpson_diversity": float(simpson_index),
-        "avg_sequence_length": float(np.mean([len(s) for s in sequences])),
-        "embedding_dim": embeddings.shape[1]
+        # Basic stats
+        "num_sequences": int(evaluation['n_samples']),
+        "embedding_dim": int(evaluation['embedding_dim']),
+        
+        # Clustering metrics
+        "num_clusters": clustering_metrics.get('n_clusters', 0),
+        "num_noise_points": clustering_metrics.get('n_noise_points', 0),
+        "noise_ratio": clustering_metrics.get('noise_ratio', 0.0),
+        "clustered_ratio": clustering_metrics.get('clustered_ratio', 0.0),
+        
+        # Cluster size statistics
+        "min_cluster_size_actual": clustering_metrics.get('min_cluster_size_actual'),
+        "max_cluster_size": clustering_metrics.get('max_cluster_size'),
+        "avg_cluster_size": clustering_metrics.get('avg_cluster_size'),
+        "median_cluster_size": clustering_metrics.get('median_cluster_size'),
+        
+        # Quality metrics
+        "silhouette_score": clustering_metrics.get('silhouette_score'),
+        "davies_bouldin_index": clustering_metrics.get('davies_bouldin_index'),
+        "calinski_harabasz_score": clustering_metrics.get('calinski_harabasz_score'),
+        
+        # Diversity metrics
+        "shannon_diversity": diversity_metrics.get('shannon_diversity', 0.0),
+        "simpson_diversity": diversity_metrics.get('simpson_diversity', 0.0),
+        "effective_n_clusters": diversity_metrics.get('effective_n_clusters'),
+        
+        # Sequence statistics
+        "avg_sequence_length": diversity_metrics.get('avg_sequence_length', 0.0),
+        "min_sequence_length": diversity_metrics.get('min_sequence_length'),
+        "max_sequence_length": diversity_metrics.get('max_sequence_length'),
+        
+        # Overall quality
+        "overall_quality_score": evaluation.get('overall_quality_score', 0.0),
+        
+        # Store full evaluation for detailed inspection
+        "detailed_evaluation": evaluation
     }
     
-    logger.info(f"Metrics: {metrics}")
+    logger.info("=" * 80)
+    logger.info("Metrics Summary:")
+    logger.info(f"  Sequences: {metrics['num_sequences']}")
+    logger.info(f"  Clusters: {metrics['num_clusters']} (+ {metrics['num_noise_points']} noise)")
+    logger.info(f"  Silhouette Score: {metrics['silhouette_score']}")
+    logger.info(f"  Davies-Bouldin Index: {metrics['davies_bouldin_index']}")
+    logger.info(f"  Shannon Diversity: {metrics['shannon_diversity']:.3f}")
+    logger.info(f"  Overall Quality: {metrics['overall_quality_score']:.2f}/10")
+    logger.info("=" * 80)
+    
     return metrics
 
 
@@ -353,7 +396,12 @@ def edna_training_pipeline(
     index_path = index_step(embeddings, clean_ids, index_name)
     
     # Calculate metrics
-    metrics = calculate_metrics_step(embeddings, clusters, clean_seqs)
+    metrics = calculate_metrics_step(
+        embeddings,
+        clusters,
+        clean_seqs,
+        min_cluster_size=hyperparameters.get("min_cluster_size", 5)
+    )
     
     # Log to MLflow
     run_id = mlflow_logging_step(

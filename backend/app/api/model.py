@@ -228,3 +228,201 @@ async def load_model(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to load model: {str(e)}"
         )
+
+
+@router.get("/{model_id}/metrics")
+async def get_model_metrics(
+    model_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get detailed evaluation metrics for a specific model.
+    
+    Returns comprehensive clustering quality metrics, diversity indices,
+    and overall quality assessment.
+    """
+    
+    model = db.query(Model).filter(Model.id == model_id).first()
+    
+    if not model:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Model not found"
+        )
+    
+    metrics = model.metrics or {}
+    
+    # Extract detailed evaluation if available
+    detailed_eval = metrics.get('detailed_evaluation', {})
+    
+    return {
+        "model_id": model.id,
+        "model_name": model.name,
+        "model_version": model.version,
+        "status": model.status,
+        "is_active": model.is_active,
+        "created_at": model.created_at,
+        
+        # Summary metrics
+        "summary": {
+            "num_sequences": metrics.get('num_sequences', 0),
+            "num_clusters": metrics.get('num_clusters', 0),
+            "num_noise_points": metrics.get('num_noise_points', 0),
+            "overall_quality_score": metrics.get('overall_quality_score', 0.0)
+        },
+        
+        # Clustering quality
+        "clustering_quality": {
+            "silhouette_score": metrics.get('silhouette_score'),
+            "davies_bouldin_index": metrics.get('davies_bouldin_index'),
+            "calinski_harabasz_score": metrics.get('calinski_harabasz_score'),
+            "noise_ratio": metrics.get('noise_ratio', 0.0),
+            "clustered_ratio": metrics.get('clustered_ratio', 0.0)
+        },
+        
+        # Cluster statistics
+        "cluster_stats": {
+            "min_cluster_size": metrics.get('min_cluster_size_actual'),
+            "max_cluster_size": metrics.get('max_cluster_size'),
+            "avg_cluster_size": metrics.get('avg_cluster_size'),
+            "median_cluster_size": metrics.get('median_cluster_size'),
+            "top_clusters": detailed_eval.get('clustering', {}).get('top_clusters', [])
+        },
+        
+        # Diversity metrics
+        "diversity": {
+            "shannon_diversity": metrics.get('shannon_diversity', 0.0),
+            "simpson_diversity": metrics.get('simpson_diversity', 0.0),
+            "effective_n_clusters": metrics.get('effective_n_clusters')
+        },
+        
+        # Sequence statistics
+        "sequence_stats": {
+            "avg_length": metrics.get('avg_sequence_length'),
+            "min_length": metrics.get('min_sequence_length'),
+            "max_length": metrics.get('max_sequence_length'),
+            "embedding_dim": metrics.get('embedding_dim', 768)
+        },
+        
+        # Full metrics (for advanced users)
+        "full_metrics": metrics
+    }
+
+
+@router.get("/{model_id}/evaluation")
+async def get_model_evaluation_report(
+    model_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get a human-readable evaluation report for a model.
+    
+    Returns a formatted report with interpretations and recommendations.
+    """
+    
+    model = db.query(Model).filter(Model.id == model_id).first()
+    
+    if not model:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Model not found"
+        )
+    
+    metrics = model.metrics or {}
+    
+    # Generate interpretation
+    quality_score = metrics.get('overall_quality_score', 0.0)
+    silhouette = metrics.get('silhouette_score')
+    noise_ratio = metrics.get('noise_ratio', 0.0)
+    n_clusters = metrics.get('num_clusters', 0)
+    
+    # Quality interpretation
+    if quality_score >= 7.0:
+        quality_level = "Excellent"
+        quality_desc = "The model shows strong clustering performance with well-separated, cohesive clusters."
+    elif quality_score >= 5.0:
+        quality_level = "Good"
+        quality_desc = "The model performs well with reasonable cluster quality."
+    elif quality_score >= 3.0:
+        quality_level = "Fair"
+        quality_desc = "The model shows moderate clustering quality. Consider tuning hyperparameters."
+    else:
+        quality_level = "Poor"
+        quality_desc = "The model shows weak clustering. Dataset may need more preprocessing or different parameters."
+    
+    # Recommendations
+    recommendations = []
+    
+    if noise_ratio > 0.5:
+        recommendations.append(
+            f"High noise ratio ({noise_ratio*100:.1f}%). Consider: "
+            "1) Reducing min_cluster_size parameter, "
+            "2) Adding more diverse training data, "
+            "3) Improving sequence quality control"
+        )
+    
+    if silhouette and silhouette < 0.3:
+        recommendations.append(
+            f"Low silhouette score ({silhouette:.3f}). Clusters may overlap. "
+            "Consider using different clustering parameters or feature engineering."
+        )
+    
+    if n_clusters < 3:
+        recommendations.append(
+            f"Very few clusters ({n_clusters}). Dataset may be too homogeneous or "
+            "clustering parameters may be too strict."
+        )
+    
+    return {
+        "model_id": model.id,
+        "model_name": model.name,
+        "model_version": model.version,
+        "evaluation_date": model.created_at,
+        
+        "overall_assessment": {
+            "quality_score": quality_score,
+            "quality_level": quality_level,
+            "description": quality_desc
+        },
+        
+        "key_metrics": {
+            "Total Sequences": metrics.get('num_sequences', 0),
+            "Clusters Found": n_clusters,
+            "Noise Points": metrics.get('num_noise_points', 0),
+            "Clustering Quality (Silhouette)": f"{silhouette:.3f}" if silhouette else "N/A",
+            "Diversity (Shannon Index)": f"{metrics.get('shannon_diversity', 0):.3f}",
+            "Average Cluster Size": metrics.get('avg_cluster_size')
+        },
+        
+        "interpretation": {
+            "clustering_quality": (
+                f"Silhouette score of {silhouette:.3f} " if silhouette else "No silhouette score available. "
+            ) + (
+                "indicates excellent cluster separation." if silhouette and silhouette > 0.7
+                else "indicates good cluster separation." if silhouette and silhouette > 0.5
+                else "indicates moderate cluster separation." if silhouette and silhouette > 0.3
+                else "indicates weak cluster separation." if silhouette
+                else ""
+            ),
+            
+            "diversity": f"Shannon diversity index of {metrics.get('shannon_diversity', 0):.2f} "
+                        f"suggests {'high' if metrics.get('shannon_diversity', 0) > 3 else 'moderate' if metrics.get('shannon_diversity', 0) > 1.5 else 'low'} "
+                        f"taxonomic diversity in the dataset.",
+            
+            "noise": f"{noise_ratio*100:.1f}% of sequences are marked as noise (not fitting any cluster well). "
+                    f"This is {'acceptable' if noise_ratio < 0.3 else 'moderate' if noise_ratio < 0.5 else 'high'}."
+        },
+        
+        "recommendations": recommendations if recommendations else [
+            "Model quality is good. No specific recommendations at this time."
+        ],
+        
+        "metrics_guide": {
+            "Silhouette Score": "Ranges from -1 to 1. >0.7 excellent, 0.5-0.7 good, 0.3-0.5 moderate, <0.3 poor",
+            "Davies-Bouldin Index": "Lower is better. <1.0 excellent, 1.0-2.0 good, >2.0 poor",
+            "Shannon Diversity": "Higher indicates more diversity. >3 high, 1.5-3 moderate, <1.5 low",
+            "Overall Quality Score": "0-10 scale. >7 excellent, 5-7 good, 3-5 fair, <3 poor"
+        }
+    }

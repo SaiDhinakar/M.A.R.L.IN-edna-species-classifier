@@ -26,7 +26,7 @@ const Sidebar = () => {
     { name: 'Databases', href: '/databases', icon: Database },
     { name: 'Search & Classify', href: '/search', icon: Search },
     { name: 'Submit Data', href: '/submit', icon: Upload },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Profile', href: '/profile', icon: User },
   ];
 
   // Add admin dashboard only for admins
@@ -114,29 +114,28 @@ const Sidebar = () => {
             })}
           </nav>
 
-          {/* User info at bottom */}
-          <div className="p-4 border-t border-gray-100 space-y-3">
-            {!isCollapsed && user && (
-              <Link
-                to="/profile"
-                onClick={() => setIsMobileOpen(false)}
-                className="block bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-3 hover:from-blue-100 hover:to-indigo-100 transition-all"
-              >
-                <div className="text-xs font-medium text-blue-900 mb-1">
-                  {user.full_name || user.username}
-                </div>
-                <div className="text-xs text-blue-700">
-                  {user.email || 'View Profile'}
-                </div>
-                {user.role === 'admin' && (
-                  <div className="mt-2">
+          <div className="p-4 border-t border-gray-200 mt-auto">
+                {/* {!isCollapsed && user && (
+                  <Link
+                  to="/profile"
+                  onClick={() => setIsMobileOpen(false)}
+                  className="block bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-3 hover:from-blue-100 hover:to-indigo-100 transition-all"
+                  >
+                  <div className="text-xs font-medium text-blue-900 mb-1">
+                    {user.full_name || user.username}
+                  </div>
+                  <div className="text-xs text-blue-700">
+                    {user.email || 'View Profile'}
+                  </div>
+                  {user.role === 'admin' && (
+                    <div className="mt-2">
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       Admin
                     </span>
-                  </div>
-                )}
-              </Link>
-            )}
+                    </div>
+                  )}
+                  </Link>
+                )} */}
             
             <button
               onClick={logout}

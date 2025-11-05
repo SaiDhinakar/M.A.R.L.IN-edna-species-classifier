@@ -53,6 +53,10 @@ def extract_accession_from_header(header: str) -> str:
 def build_species_mapping_from_fasta(fasta_path: str) -> Dict[str, str]:
     """
     Build a mapping of accession -> species name from a FASTA file.
+    Creates multiple mapping entries for flexible lookup:
+    - Full accession with version (NR_118889.1)
+    - Accession without version (NR_118889)
+    - Converted prefixes (NG_ <-> NR_) for cross-referencing
     
     Args:
         fasta_path: Path to FASTA file
@@ -70,7 +74,25 @@ def build_species_mapping_from_fasta(fasta_path: str) -> Dict[str, str]:
                 species = parse_species_from_header(line)
                 
                 if accession and species:
+                    # Add full accession
                     mapping[accession] = species
+                    
+                    # Add without version number for flexible matching
+                    base_accession = accession.split('.')[0]
+                    if base_accession != accession:
+                        mapping[base_accession] = species
+                    
+                    # Add alternative prefix mappings (NR_ <-> NG_)
+                    if accession.startswith('NR_'):
+                        alt_accession = accession.replace('NR_', 'NG_', 1)
+                        mapping[alt_accession] = species
+                        alt_base = alt_accession.split('.')[0]
+                        mapping[alt_base] = species
+                    elif accession.startswith('NG_'):
+                        alt_accession = accession.replace('NG_', 'NR_', 1)
+                        mapping[alt_accession] = species
+                        alt_base = alt_accession.split('.')[0]
+                        mapping[alt_base] = species
     
     return mapping
 

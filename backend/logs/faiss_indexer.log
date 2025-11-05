@@ -5,3 +5,6 @@
 2025-11-05 00:12:18 - app.services.faiss_indexer - INFO - Saved FAISS index to models/indices/model_edna_classifier_2.faiss
 2025-11-05 00:24:20 - app.services.faiss_indexer - INFO - Loaded FAISS index with 3692 vectors
 2025-11-05 00:26:50 - app.services.faiss_indexer - INFO - Loaded FAISS index with 3692 vectors
+2025-11-05 08:59:51 - app.services.faiss_indexer - INFO - Loaded FAISS index with 3692 vectors
+2025-11-05 09:55:09 - app.services.faiss_indexer - INFO - Loaded FAISS index with 3692 vectors
+2025-11-05 10:04:37 - app.services.faiss_indexer - INFO - Loaded FAISS index with 3692 vectors

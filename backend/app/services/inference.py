@@ -173,6 +173,63 @@ class InferenceService:
             logger.warning(f"Could not load cluster metadata: {e}", exc_info=True)
             # Continue without metadata - inference will still work
     
+    def _get_species_name_for_sequence(self, seq_id: str) -> Optional[str]:
+        """
+        Get species name for a sequence ID, trying multiple approaches:
+        1. Direct lookup in species_mapping
+        2. Try without version number (e.g., NG_065604.1 -> NG_065604)
+        3. Try converting NG_ to NR_ prefix (Gene -> RNA record)
+        4. Extract from the sequence ID itself if it contains species info
+        
+        Args:
+            seq_id: Sequence accession ID (e.g., "NG_065604.1" or "NR_118889.1")
+            
+        Returns:
+            Species name if found, None otherwise
+        """
+        # Try direct lookup
+        if seq_id in self.species_mapping:
+            return self.species_mapping[seq_id]
+        
+        # Try without version number
+        base_id = seq_id.split('.')[0]
+        if base_id in self.species_mapping:
+            return self.species_mapping[base_id]
+        
+        # Try with version .1
+        if '.' not in seq_id:
+            versioned_id = f"{seq_id}.1"
+            if versioned_id in self.species_mapping:
+                return self.species_mapping[versioned_id]
+        
+        # Try converting NG_ to NR_ (Gene records to RNA records)
+        # NG_ = RefSeq Gene, NR_ = RefSeq RNA - they might refer to the same organism
+        if seq_id.startswith('NG_'):
+            nr_id = seq_id.replace('NG_', 'NR_', 1)
+            if nr_id in self.species_mapping:
+                logger.debug(f"Found species for {seq_id} using NR_ conversion: {nr_id}")
+                return self.species_mapping[nr_id]
+            
+            # Try without version
+            nr_base = nr_id.split('.')[0]
+            if nr_base in self.species_mapping:
+                logger.debug(f"Found species for {seq_id} using NR_ base conversion: {nr_base}")
+                return self.species_mapping[nr_base]
+        
+        # Try all entries that have the same numeric ID (regardless of prefix)
+        # Extract numeric part: NG_065604.1 -> 065604
+        try:
+            numeric_part = seq_id.split('_')[1].split('.')[0]
+            for mapped_id, species in self.species_mapping.items():
+                if numeric_part in mapped_id:
+                    logger.debug(f"Found species for {seq_id} using numeric match with {mapped_id}")
+                    return species
+        except (IndexError, AttributeError):
+            pass
+        
+        logger.debug(f"No species name found for sequence {seq_id}")
+        return None
+    
     def _get_from_cache(self, sequence_hash: str) -> Optional[Dict[str, Any]]:
         """Get inference result from cache."""
         cache_key = f"inference:{sequence_hash}"
@@ -231,8 +288,8 @@ class InferenceService:
             cluster_id = metadata.get('cluster_id')
             taxonomy = metadata.get('taxonomy')
             
-            # Get species name from mapping
-            species_name = self.species_mapping.get(seq_id)
+            # Get species name from mapping - try multiple approaches
+            species_name = self._get_species_name_for_sequence(seq_id)
             
             similar_seq = SimilarSequence(
                 sequence_id=seq_id,

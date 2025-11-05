@@ -228,6 +228,59 @@ export const adminAPI = {
     const response = await api.post(`/model/load/${modelId}`);
     return response.data;
   },
+
+  activateModel: async (modelId) => {
+    const response = await api.post(`/model/activate/${modelId}`);
+    return response.data;
+  },
+};
+
+// ===== Model APIs =====
+export const modelAPI = {
+  // Infer sequence
+  inferSequence: async (sequence, top_k = 5) => {
+    const response = await api.post('/model/infer', {
+      sequence,
+      top_k,
+    });
+    return response.data;
+  },
+
+  // Get all model versions
+  getVersions: async () => {
+    const response = await api.get('/model/versions');
+    return response.data;
+  },
+
+  // Get model info
+  getInfo: async () => {
+    const response = await api.get('/model/info');
+    return response.data;
+  },
+
+  // Activate model
+  activateModel: async (modelId) => {
+    const response = await api.post(`/model/activate/${modelId}`);
+    return response.data;
+  },
+
+  // Load model
+  loadModel: async (modelId) => {
+    const response = await api.post(`/model/load/${modelId}`);
+    return response.data;
+  },
+
+  // Get model metrics
+  getMetrics: async (modelId) => {
+    const response = await api.get(`/model/${modelId}/metrics`);
+    return response.data;
+  },
+
+  // Get model evaluation
+  getEvaluation: async (modelId) => {
+    const response = await api.get(`/model/${modelId}/evaluation`);
+    return response.data;
+  },
 };
 
 // ===== User Profile APIs =====
@@ -270,6 +323,57 @@ export const visualizationAPI = {
   // Get dataset statistics
   getDatasetStats: async (datasetId) => {
     const response = await api.get(`/visualize/dataset/${datasetId}/stats`);
+    return response.data;
+  },
+};
+
+// ===== System Monitoring APIs =====
+export const systemAPI = {
+  // Get storage metrics (MinIO)
+  getStorage: async () => {
+    const response = await api.get('/system/storage');
+    return response.data;
+  },
+
+  // Get CPU metrics
+  getCPU: async () => {
+    const response = await api.get('/system/cpu');
+    return response.data;
+  },
+
+  // Get GPU metrics
+  getGPU: async () => {
+    const response = await api.get('/system/gpu');
+    return response.data;
+  },
+
+  // Get RAM metrics
+  getRAM: async () => {
+    const response = await api.get('/system/ram');
+    return response.data;
+  },
+
+  // Get disk metrics
+  getDisk: async () => {
+    const response = await api.get('/system/disk');
+    return response.data;
+  },
+
+  // Get all system metrics
+  getAll: async () => {
+    const response = await api.get('/system/all');
+    return response.data;
+  },
+
+  // Get system health
+  getHealth: async () => {
+    const response = await api.get('/system/health');
+    return response.data;
+  },
+
+  // Get external services status
+  getServices: async () => {
+    const response = await api.get('/system/services');
     return response.data;
   },
 };

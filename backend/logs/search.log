@@ -74,3 +74,43 @@ Traceback (most recent call last):
   File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 427, in _url_open
     raise response_error
 minio.error.S3Error: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874E40B87CC4D4A, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets
+2025-11-05 09:09:13 - app.api.search - INFO - Searching in dataset 2 for query 'string' (type: taxonomy)
+2025-11-05 09:09:13 - app.api.search - ERROR - Error searching sequences: MinIOService.download_file() got an unexpected keyword argument 'bucket_name'
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 67, in search_sequences
+    minio_service.download_file(
+TypeError: MinIOService.download_file() got an unexpected keyword argument 'bucket_name'
+2025-11-05 09:10:36 - app.api.search - INFO - Searching in dataset 2 for query 'string' (type: taxonomy)
+2025-11-05 09:10:36 - app.api.search - ERROR - Error searching sequences: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874FF4772D47445, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 67, in search_sequences
+    minio_service.download_file(
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/services/minio_service.py", line 99, in download_file
+    self.client.fget_object(bucket, object_name, file_path)
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 1122, in fget_object
+    stat = self.stat_object(
+           ^^^^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 2254, in stat_object
+    response = self._execute(
+               ^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 441, in _execute
+    region = self._get_region(bucket_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 498, in _get_region
+    response = self._url_open(
+               ^^^^^^^^^^^^^^^
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/.venv/lib/python3.12/site-packages/minio/api.py", line 427, in _url_open
+    raise response_error
+minio.error.S3Error: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874FF4772D47445, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets
+2025-11-05 09:13:16 - app.api.search - INFO - Searching in dataset 2 for query 'string' (type: taxonomy)
+2025-11-05 09:13:16 - app.api.search - ERROR - Error searching sequences: 404: Bucket 'datasets' does not exist in MinIO
+Traceback (most recent call last):
+  File "/run/media/spidey/35f48b83-0fe4-4b1f-ba92-81ad5e6b81f61/M.A.R.L.IN-edna-species-classifier/backend/app/api/search.py", line 69, in search_sequences
+    raise HTTPException(
+fastapi.exceptions.HTTPException: 404: Bucket 'datasets' does not exist in MinIO
+2025-11-05 09:15:48 - app.api.search - INFO - Searching in dataset 2 for query 'string' (type: taxonomy)
+2025-11-05 09:15:49 - app.api.search - INFO - Loaded 3692 sequences from processed/dataset_2_processed.parquet
+2025-11-05 09:15:49 - app.api.search - INFO - Found 0 matches
+2025-11-05 09:16:06 - app.api.search - INFO - Searching in dataset 2 for query 'Bacteria' (type: taxonomy)
+2025-11-05 09:16:06 - app.api.search - INFO - Loaded 3692 sequences from processed/dataset_2_processed.parquet
+2025-11-05 09:16:06 - app.api.search - INFO - Found 0 matches

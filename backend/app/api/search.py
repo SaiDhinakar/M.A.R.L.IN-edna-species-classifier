@@ -63,11 +63,19 @@ async def search_sequences(
         with tempfile.TemporaryDirectory() as tmpdir:
             local_path = os.path.join(tmpdir, "processed.parquet")
             
+            # Ensure bucket exists
+            bucket_name = "processed"
+            if not minio_service.client.bucket_exists(bucket_name):
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Bucket '{bucket_name}' does not exist in MinIO"
+                )
+            
             # Download from MinIO
             minio_service.download_file(
                 parquet_path,
-                local_path,
-                bucket_name="datasets"
+                bucket_name,
+                local_path
             )
             
             # Load parquet file

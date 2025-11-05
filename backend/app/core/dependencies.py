@@ -69,3 +69,7 @@ async def get_admin_user(
             detail="Not enough permissions. Admin access required."
         )
     return current_user
+
+
+# Alias for consistency with other naming conventions
+require_admin = get_admin_user

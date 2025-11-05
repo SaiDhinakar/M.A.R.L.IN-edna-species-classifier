@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
-import { adminAPI, datasetAPI } from '../services/api';
+import { adminAPI, datasetAPI, modelAPI } from '../services/api';
 import Layout from '../components/Layout';
 import Card from '../components/Card';
 import Loading from '../components/Loading';
 import Badge from '../components/Badge';
 import Modal from '../components/Modal';
+import ModelInferenceModal from '../components/ModelInferenceModal';
+import ModelMetricsModal from '../components/ModelMetricsModal';
+import SystemMonitoringCard from '../components/SystemMonitoringCard';
+import StorageMonitoringCard from '../components/StorageMonitoringCard';
+import ExternalServicesCard from '../components/ExternalServicesCard';
 import { ToastContainer } from '../components/Toast';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -31,6 +36,10 @@ const AdminDashboard = () => {
   const [loadingDatasets, setLoadingDatasets] = useState(false);
   const [loadingTrainingRuns, setLoadingTrainingRuns] = useState(false);
   const [showTrainModal, setShowTrainModal] = useState(false);
+  const [showInferenceModal, setShowInferenceModal] = useState(false);
+  const [showMetricsModal, setShowMetricsModal] = useState(false);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [modelInfo, setModelInfo] = useState(null);
   const [toasts, setToasts] = useState([]);
   const [trainingParams, setTrainingParams] = useState({
     model_name: 'edna_classifier',
@@ -103,8 +112,12 @@ const AdminDashboard = () => {
   const fetchModelVersions = async () => {
     try {
       setLoading(true);
-      const data = await adminAPI.getModels();
-      setModelVersions(Array.isArray(data) ? data : data.models || []);
+      const [modelsData, infoData] = await Promise.all([
+        adminAPI.getModels(),
+        modelAPI.getInfo().catch(() => null),
+      ]);
+      setModelVersions(Array.isArray(modelsData) ? modelsData : modelsData.models || []);
+      setModelInfo(infoData);
     } catch (error) {
       console.error('Error fetching model versions:', error);
       setModelVersions([]);
@@ -202,15 +215,41 @@ const AdminDashboard = () => {
   };
 
   const handleLoadModel = async (modelId) => {
-    if (!confirm('Load this model version for inference?')) return;
+    if (!confirm('Load this model version into memory for inference?')) return;
     try {
-      await adminAPI.loadModel(modelId);
-      alert('Model loaded successfully!');
+      const result = await modelAPI.loadModel(modelId);
+      addToast(result.message || 'Model loaded successfully!', 'success');
       fetchModelVersions();
     } catch (error) {
       console.error('Error loading model:', error);
-      alert('Failed to load model. Please try again.');
+      addToast(error.response?.data?.detail || 'Failed to load model', 'error');
     }
+  };
+
+  const handleActivateModel = async (modelId) => {
+    if (!confirm('Mark this model as the active model?')) return;
+    try {
+      const result = await modelAPI.activateModel(modelId);
+      addToast(result.message || 'Model activated successfully!', 'success');
+      fetchModelVersions();
+    } catch (error) {
+      console.error('Error activating model:', error);
+      addToast(error.response?.data?.detail || 'Failed to activate model', 'error');
+    }
+  };
+
+  const handleOpenInference = () => {
+    setShowInferenceModal(true);
+  };
+
+  const handleOpenMetrics = (model) => {
+    setSelectedModel(model);
+    setShowMetricsModal(true);
+  };
+
+  const handleCloseMetrics = () => {
+    setSelectedModel(null);
+    setShowMetricsModal(false);
   };
 
   const handleDownload = async (datasetId, filename) => {
@@ -646,211 +685,180 @@ const AdminDashboard = () => {
 
           {/* Models Tab */}
           {activeTab === 'models' && (
-            <Card title="Model Versions">
-              {loading ? (
-                <Loading.LoadingSpinner />
-              ) : modelVersions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  <p>No model versions available.</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Version
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Created
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Accuracy
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          F1 Score
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {modelVersions.map((model) => (
-                        <tr key={model.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                            v{model.version}
-                          </td>
-                          <td className="px-6 py-4">
-                            {getStatusBadge(model.is_active ? 'active' : 'inactive')}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-500">
-                            {model.created_at
-                              ? formatDistanceToNow(new Date(model.created_at), {
-                                  addSuffix: true,
-                                })
-                              : 'N/A'}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-900">
-                            {model.metrics?.accuracy
-                              ? `${(model.metrics.accuracy * 100).toFixed(2)}%`
-                              : 'N/A'}
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-900">
-                            {model.metrics?.f1_score
-                              ? model.metrics.f1_score.toFixed(4)
-                              : 'N/A'}
-                          </td>
-                          <td className="px-6 py-4 text-sm font-medium">
-                            {!model.is_active && (
-                              <button
-                                onClick={() => handleLoadModel(model.id)}
-                                className="text-blue-600 hover:text-blue-900"
-                              >
-                                Activate
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+            <div className="space-y-6">
+              {/* Model Info Card */}
+              {modelInfo && modelInfo.status !== 'no_model_loaded' && (
+                <Card title="Currently Loaded Model">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="p-4 bg-green-50 rounded-lg">
+                      <p className="text-xs text-green-600 font-medium">Status</p>
+                      <p className="text-lg font-bold text-green-900 mt-1 capitalize">
+                        {modelInfo.status}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-blue-50 rounded-lg">
+                      <p className="text-xs text-blue-600 font-medium">Version</p>
+                      <p className="text-lg font-bold text-blue-900 mt-1">
+                        {modelInfo.version || 'N/A'}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-purple-50 rounded-lg">
+                      <p className="text-xs text-purple-600 font-medium">Total Vectors</p>
+                      <p className="text-lg font-bold text-purple-900 mt-1">
+                        {modelInfo.index_stats?.total_vectors?.toLocaleString() || 'N/A'}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-indigo-50 rounded-lg">
+                      <p className="text-xs text-indigo-600 font-medium">Species</p>
+                      <p className="text-lg font-bold text-indigo-900 mt-1">
+                        {modelInfo.species_mapping_count?.toLocaleString() || 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <button
+                      onClick={handleOpenInference}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      Test Inference
+                    </button>
+                  </div>
+                </Card>
               )}
-            </Card>
+
+              {/* Model Versions */}
+              <Card title="Model Versions">
+                {loading ? (
+                  <Loading.LoadingSpinner />
+                ) : modelVersions.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>No model versions available.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            Name / Version
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            Status
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            Quality Score
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            Clusters
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            Created
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {modelVersions.map((model) => {
+                          const isLoaded = modelInfo?.version === model.version;
+                          const qualityScore = model.metrics?.overall_quality_score;
+                          
+                          return (
+                            <tr key={model.id} className={`hover:bg-gray-50 ${isLoaded ? 'bg-green-50' : ''}`}>
+                              <td className="px-6 py-4">
+                                <div className="text-sm font-medium text-gray-900">
+                                  {model.name}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  v{model.version}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex flex-col gap-1">
+                                  {model.is_active && (
+                                    <Badge variant="success">Active</Badge>
+                                  )}
+                                  {isLoaded && (
+                                    <Badge variant="info">Loaded</Badge>
+                                  )}
+                                  {!model.is_active && !isLoaded && (
+                                    <Badge variant="secondary">Inactive</Badge>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4">
+                                {qualityScore ? (
+                                  <div>
+                                    <div className="text-lg font-bold text-gray-900">
+                                      {qualityScore.toFixed(2)}
+                                      <span className="text-xs text-gray-500">/10</span>
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      {qualityScore >= 8 ? 'Excellent' :
+                                       qualityScore >= 6 ? 'Good' :
+                                       qualityScore >= 4 ? 'Fair' : 'Poor'}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <span className="text-sm text-gray-500">N/A</span>
+                                )}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-900">
+                                {model.metrics?.num_clusters || 'N/A'}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-500">
+                                {model.created_at
+                                  ? safeFormatDate(model.created_at)
+                                  : 'N/A'}
+                              </td>
+                              <td className="px-6 py-4">
+                                <div className="flex flex-col gap-2">
+                                  {!model.is_active && (
+                                    <button
+                                      onClick={() => handleActivateModel(model.id)}
+                                      className="text-xs text-blue-600 hover:text-blue-900 font-medium text-left"
+                                    >
+                                      Activate
+                                    </button>
+                                  )}
+                                  {!isLoaded && (
+                                    <button
+                                      onClick={() => handleLoadModel(model.id)}
+                                      className="text-xs text-green-600 hover:text-green-900 font-medium text-left"
+                                    >
+                                      Load
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleOpenMetrics(model)}
+                                    className="text-xs text-purple-600 hover:text-purple-900 font-medium text-left"
+                                  >
+                                    View Metrics
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </Card>
+            </div>
           )}
           {/* Metrics Tab */}
           {activeTab === 'metrics' && (
             <div className="space-y-6">
-              {/* System Overview */}
-              <Card title="System Overview">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div className="p-4 bg-blue-50 rounded-lg">
-                    <p className="text-sm text-blue-600 font-medium">Total Datasets</p>
-                    <p className="text-3xl font-bold text-blue-900 mt-2">
-                      {pendingDatasets.length + (modelVersions.length || 0)}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-green-50 rounded-lg">
-                    <p className="text-sm text-green-600 font-medium">Approved Datasets</p>
-                    <p className="text-3xl font-bold text-green-900 mt-2">
-                      {modelVersions.length || 0}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-yellow-50 rounded-lg">
-                    <p className="text-sm text-yellow-600 font-medium">Pending Approval</p>
-                    <p className="text-3xl font-bold text-yellow-900 mt-2">
-                      {pendingDatasets.length}
-                    </p>
-                  </div>
-                  <div className="p-4 bg-purple-50 rounded-lg">
-                    <p className="text-sm text-purple-600 font-medium">Active Models</p>
-                    <p className="text-3xl font-bold text-purple-900 mt-2">
-                      {modelVersions.filter(m => m.is_active).length || 0}
-                    </p>
-                  </div>
-                </div>
-              </Card>
+              {/* System Resources (CPU, RAM, GPU, Disk) */}
+              <SystemMonitoringCard />
 
-              {/* Training Statistics */}
-              <Card title="Training Statistics">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Training Run
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Sequences
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Clusters
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                          Started
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {trainingRuns.length === 0 ? (
-                        <tr>
-                          <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
-                            No training runs yet
-                          </td>
-                        </tr>
-                      ) : (
-                        trainingRuns.slice(0, 5).map((run) => (
-                          <tr key={run.id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                              Run #{run.id}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              {getStatusBadge(run.status)}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {run.num_sequences_processed || 'N/A'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {run.num_clusters_found || 'N/A'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              {run.initiated_at
-                                ? formatDistanceToNow(new Date(run.initiated_at), { addSuffix: true })
-                                : 'N/A'}
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </Card>
+              {/* Storage Monitoring (MinIO) */}
+              <StorageMonitoringCard />
 
-              {/* System Health */}
-              <Card title="System Health">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">API Status</span>
-                      <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">
-                        Online
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-600 h-2 rounded-full" style={{ width: '100%' }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Database Status</span>
-                      <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">
-                        Connected
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-600 h-2 rounded-full" style={{ width: '100%' }} />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Storage Status</span>
-                      <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">
-                        Healthy
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-600 h-2 rounded-full" style={{ width: '100%' }} />
-                    </div>
-                  </div>
-                </div>
-              </Card>
+              {/* External Services Health (MinIO, MLflow, PostgreSQL, Redis) */}
+              <ExternalServicesCard />
             </div>
           )}
         </div>
@@ -998,6 +1006,22 @@ const AdminDashboard = () => {
             </div>
           </form>
         </Modal>
+      )}
+
+      {/* Model Inference Modal */}
+      <ModelInferenceModal
+        isOpen={showInferenceModal}
+        onClose={() => setShowInferenceModal(false)}
+      />
+
+      {/* Model Metrics Modal */}
+      {selectedModel && (
+        <ModelMetricsModal
+          isOpen={showMetricsModal}
+          onClose={handleCloseMetrics}
+          modelId={selectedModel.id}
+          modelName={`${selectedModel.name} v${selectedModel.version}`}
+        />
       )}
       
       {/* Toast Notifications */}
