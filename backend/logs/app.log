@@ -1,0 +1,172 @@
+2025-11-04 23:36:50 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-04 23:36:50 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-04 23:36:54 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-04 23:36:54 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-04 23:41:19 - app.api.model - INFO - Loading model 'edna_classifier' with index 'model_edna_classifier_1' and dataset_id=1
+2025-11-04 23:41:19 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_1.faiss to ./data/indices/model_edna_classifier_1.faiss
+2025-11-04 23:41:19 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_1_metadata.pkl to ./data/indices/model_edna_classifier_1_metadata.pkl
+2025-11-04 23:41:19 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_1_processed.parquet to /tmp/tmpi0ui_m6w/processed.parquet
+2025-11-04 23:41:21 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_1_embeddings.npy to /tmp/tmp_ecqbbjo/embeddings.npy
+2025-11-04 23:58:47 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_1.faiss to ./data/indices/model_edna_classifier_1.faiss
+2025-11-04 23:58:47 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_1_metadata.pkl to ./data/indices/model_edna_classifier_1_metadata.pkl
+2025-11-05 00:05:06 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:05:06 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:05:38 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:05:38 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:07:53 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:07:53 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:09:23 - app.services.minio_service - INFO - Uploaded /tmp/tmp73q1cre6/18S_fungal_sequences.fasta to raw-datasets/users/1/1_20251104_183922_18S_fungal_sequences.fasta
+2025-11-05 00:09:23 - app.api.data - INFO - User admin uploaded dataset 2
+2025-11-05 00:09:23 - app.api.data - INFO - Queued background processing for dataset 2
+2025-11-05 00:09:24 - app.api.data - INFO - Starting background processing for dataset 2
+2025-11-05 00:09:24 - app.api.data - INFO - Loading data from raw-datasets/users/1/1_20251104_183922_18S_fungal_sequences.fasta
+2025-11-05 00:09:24 - app.services.minio_service - INFO - Downloaded raw-datasets/users/1/1_20251104_183922_18S_fungal_sequences.fasta to /tmp/tmpf4a7c0cu/1_20251104_183922_18S_fungal_sequences.fasta
+2025-11-05 00:09:24 - app.api.data - INFO - Loaded 3692 sequences
+2025-11-05 00:09:24 - app.api.data - INFO - Preprocessing sequences
+2025-11-05 00:09:24 - app.api.data - INFO - Preprocessed 580 sequences
+2025-11-05 00:09:24 - app.api.data - INFO - Successfully processed dataset 2 with 580 sequences - awaiting admin approval
+2025-11-05 00:09:35 - app.services.minio_service - INFO - Uploaded /tmp/tmplu2_c06q/28S_fungal_sequences.fasta to raw-datasets/users/1/1_20251104_183934_28S_fungal_sequences.fasta
+2025-11-05 00:09:35 - app.api.data - INFO - User admin uploaded dataset 3
+2025-11-05 00:09:35 - app.api.data - INFO - Queued background processing for dataset 3
+2025-11-05 00:09:35 - app.api.data - INFO - Starting background processing for dataset 3
+2025-11-05 00:09:35 - app.api.data - INFO - Loading data from raw-datasets/users/1/1_20251104_183934_28S_fungal_sequences.fasta
+2025-11-05 00:09:35 - app.services.minio_service - INFO - Downloaded raw-datasets/users/1/1_20251104_183934_28S_fungal_sequences.fasta to /tmp/tmpriap9vqe/1_20251104_183934_28S_fungal_sequences.fasta
+2025-11-05 00:09:35 - app.api.data - INFO - Loaded 11345 sequences
+2025-11-05 00:09:35 - app.api.data - INFO - Preprocessing sequences
+2025-11-05 00:09:36 - app.api.data - INFO - Preprocessed 9037 sequences
+2025-11-05 00:09:36 - app.api.data - INFO - Successfully processed dataset 3 with 9037 sequences - awaiting admin approval
+2025-11-05 00:09:52 - app.services.minio_service - INFO - Uploaded /tmp/tmp_yhohblc/LSU_eukaryote_rRNA.fasta to raw-datasets/users/1/1_20251104_183951_LSU_eukaryote_rRNA.fasta
+2025-11-05 00:09:52 - app.api.data - INFO - User admin uploaded dataset 4
+2025-11-05 00:09:52 - app.api.data - INFO - Queued background processing for dataset 4
+2025-11-05 00:09:52 - app.api.data - INFO - Starting background processing for dataset 4
+2025-11-05 00:09:52 - app.api.data - INFO - Loading data from raw-datasets/users/1/1_20251104_183951_LSU_eukaryote_rRNA.fasta
+2025-11-05 00:09:52 - app.services.minio_service - INFO - Downloaded raw-datasets/users/1/1_20251104_183951_LSU_eukaryote_rRNA.fasta to /tmp/tmp66bw9kdd/1_20251104_183951_LSU_eukaryote_rRNA.fasta
+2025-11-05 00:09:52 - app.api.data - INFO - Loaded 6575 sequences
+2025-11-05 00:09:52 - app.api.data - INFO - Preprocessing sequences
+2025-11-05 00:09:52 - app.api.data - INFO - Preprocessed 9 sequences
+2025-11-05 00:09:52 - app.api.data - INFO - Successfully processed dataset 4 with 9 sequences - awaiting admin approval
+2025-11-05 00:10:38 - app.api.admin - INFO - Admin admin approved dataset 2
+2025-11-05 00:10:41 - app.api.admin - INFO - Admin admin approved dataset 3
+2025-11-05 00:10:45 - app.api.admin - INFO - Admin admin approved dataset 4
+2025-11-05 00:11:50 - app.api.admin - INFO - Training initiated for dataset 2 by admin
+2025-11-05 00:11:50 - app.services.minio_service - INFO - Downloaded raw-datasets/users/1/1_20251104_183922_18S_fungal_sequences.fasta to /tmp/tmpj8pi3t2g/1_20251104_183922_18S_fungal_sequences.fasta
+2025-11-05 00:12:18 - app.services.minio_service - INFO - Uploaded ./data/indices/model_edna_classifier_2.faiss to models/indices/model_edna_classifier_2.faiss
+2025-11-05 00:12:18 - app.services.minio_service - INFO - Uploaded ./data/indices/model_edna_classifier_2_metadata.pkl to models/indices/model_edna_classifier_2_metadata.pkl
+2025-11-05 00:12:19 - app.services.mlflow_service - INFO - Started MLflow run: c728f5bdee1e4fb6a054e56c9749f42a
+2025-11-05 00:12:19 - app.services.minio_service - INFO - Uploaded /tmp/tmpjj58ncqw/dataset_2_processed.parquet to processed/processed/dataset_2_processed.parquet
+2025-11-05 00:12:20 - app.services.minio_service - INFO - Uploaded /tmp/tmpjj58ncqw/dataset_2_embeddings.npy to processed/processed/dataset_2_embeddings.npy
+2025-11-05 00:12:21 - app.api.admin - INFO - Training pipeline completed for dataset 2
+2025-11-05 00:12:21 - app.api.admin - INFO - Created model: edna_classifier (ID: 2, Version: v20251104_184220)
+2025-11-05 00:18:54 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:18:54 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:19:12 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:19:12 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:19:32 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:19:32 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:20:23 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:20:24 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:24:20 - app.api.model - INFO - Loading model 'edna_classifier' (ID: 2) with index 'model_edna_classifier_2', dataset_id=2
+2025-11-05 00:24:20 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2.faiss to ./data/indices/model_edna_classifier_2.faiss
+2025-11-05 00:24:20 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2_metadata.pkl to ./data/indices/model_edna_classifier_2_metadata.pkl
+2025-11-05 00:24:20 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_processed.parquet to /tmp/tmpbqmbldhu/processed.parquet
+2025-11-05 00:24:22 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_embeddings.npy to /tmp/tmpdez_gml_/embeddings.npy
+2025-11-05 00:25:40 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:25:40 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:26:29 - app.api.model - INFO - Activated model 2 (edna_classifier v20251104_184220)
+2025-11-05 00:26:50 - app.api.model - INFO - Loading model 'edna_classifier' (ID: 2) with index 'model_edna_classifier_2', dataset_id=2
+2025-11-05 00:26:50 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2.faiss to ./data/indices/model_edna_classifier_2.faiss
+2025-11-05 00:26:50 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2_metadata.pkl to ./data/indices/model_edna_classifier_2_metadata.pkl
+2025-11-05 00:26:50 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_processed.parquet to /tmp/tmpk6a91xb8/processed.parquet
+2025-11-05 00:26:53 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_embeddings.npy to /tmp/tmp_tdoe1hv/embeddings.npy
+2025-11-05 00:41:37 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:41:37 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:42:03 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:42:03 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:42:39 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:42:39 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:42:55 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:42:55 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:47:04 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:47:04 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:48:40 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:48:40 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:49:29 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:49:29 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:50:18 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:50:18 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:50:37 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:50:37 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:51:23 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:51:23 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 00:51:27 - app.services.minio_service - ERROR - Error downloading file: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874E40A598ADA74, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets
+2025-11-05 00:51:32 - app.services.minio_service - ERROR - Error downloading file: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874E40B87CC4D4A, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets
+2025-11-05 00:51:54 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 00:51:54 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 08:52:43 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 08:52:43 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 08:52:50 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 08:52:50 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 08:59:51 - app.api.model - INFO - Loading model 'edna_classifier' (ID: 2) with index 'model_edna_classifier_2', dataset_id=2
+2025-11-05 08:59:51 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2.faiss to ./data/indices/model_edna_classifier_2.faiss
+2025-11-05 08:59:51 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2_metadata.pkl to ./data/indices/model_edna_classifier_2_metadata.pkl
+2025-11-05 08:59:51 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_processed.parquet to /tmp/tmpdnlltjjo/processed.parquet
+2025-11-05 08:59:54 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_embeddings.npy to /tmp/tmpqvfzyfst/embeddings.npy
+2025-11-05 09:10:25 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:10:25 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:10:36 - app.services.minio_service - ERROR - Error downloading file: S3 operation failed; code: NoSuchBucket, message: The specified bucket does not exist, resource: /datasets, request_id: 1874FF4772D47445, host_id: dd9025bab4ad464b049177c95eb6ebf374d3b3fd1af9251148b658df7ac2e3e8, bucket_name: datasets
+2025-11-05 09:11:42 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:11:42 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:14:31 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:14:31 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:14:51 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:14:51 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:15:49 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_processed.parquet to /tmp/tmpxbhc58ql/processed.parquet
+2025-11-05 09:16:06 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_processed.parquet to /tmp/tmpy5b8o2hj/processed.parquet
+2025-11-05 09:31:09 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:31:09 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:33:15 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:33:16 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:34:32 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:34:32 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:35:01 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:35:01 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:35:12 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:35:12 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:39:38 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:39:38 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:43:31 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:43:31 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:46:42 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:46:43 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:47:41 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:48:41 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:49:41 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:50:41 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:51:09 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 09:51:10 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 09:52:00 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:52:01 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:52:51 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:52:52 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:52:54 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:52:59 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:53:44 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:53:45 - app.api.system - ERROR - PostgreSQL health check failed: Not an executable object: 'SELECT 1'
+2025-11-05 09:55:09 - app.api.model - INFO - Loading model 'edna_classifier' (ID: 2) with index 'model_edna_classifier_2', dataset_id=2
+2025-11-05 09:55:09 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2.faiss to ./data/indices/model_edna_classifier_2.faiss
+2025-11-05 09:55:09 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2_metadata.pkl to ./data/indices/model_edna_classifier_2_metadata.pkl
+2025-11-05 09:55:09 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_processed.parquet to /tmp/tmpj82ctvld/processed.parquet
+2025-11-05 09:55:12 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_embeddings.npy to /tmp/tmp7gmuzwa8/embeddings.npy
+2025-11-05 10:03:04 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 10:03:04 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 10:03:22 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 10:03:22 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 10:03:47 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 10:03:47 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 10:04:25 - app.services.mlflow_service - INFO - Using existing MLflow experiment: edna_classification
+2025-11-05 10:04:25 - app.services.redis_service - INFO - Successfully connected to Redis
+2025-11-05 10:04:36 - app.api.model - INFO - Loading model 'edna_classifier' (ID: 2) with index 'model_edna_classifier_2', dataset_id=2
+2025-11-05 10:04:37 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2.faiss to ./data/indices/model_edna_classifier_2.faiss
+2025-11-05 10:04:37 - app.services.minio_service - INFO - Downloaded models/indices/model_edna_classifier_2_metadata.pkl to ./data/indices/model_edna_classifier_2_metadata.pkl
+2025-11-05 10:04:37 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_processed.parquet to /tmp/tmpdfyzb_0h/processed.parquet
+2025-11-05 10:04:38 - app.services.minio_service - INFO - Downloaded processed/processed/dataset_2_embeddings.npy to /tmp/tmpxy5iabp0/embeddings.npy

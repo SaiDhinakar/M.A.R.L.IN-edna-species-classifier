@@ -12,14 +12,12 @@ const Header = ({ title = "Dashboard" }) => {
         <span className="ml-2 text-lg font-medium text-gray-700">{title}</span>
       </div>
       
-      <div className="flex items-center space-x-4">
-        {/* Notifications */}
+      {/* <div className="flex items-center space-x-4">
         <button className="relative p-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-200">
           <Bell className="h-5 w-5" />
           <span className="absolute top-2 right-2 h-2 w-2 bg-red-500 rounded-full"></span>
         </button>
         
-        {/* Profile Dropdown */}
         <div className="relative">
           <button
             onClick={() => setShowProfile(!showProfile)}
@@ -49,7 +47,7 @@ const Header = ({ title = "Dashboard" }) => {
             </div>
           )}
         </div>
-      </div>
+      </div> */}
     </header>
   );
 };

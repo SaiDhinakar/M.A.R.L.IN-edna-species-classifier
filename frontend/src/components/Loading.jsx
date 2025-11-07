@@ -60,5 +60,8 @@ export const CardSkeleton = () => {
   );
 };
 
-const Loading = { Spinner, LoadingOverlay, TableSkeleton, CardSkeleton };
+// Alias for backward compatibility
+export const LoadingSpinner = Spinner;
+
+const Loading = { Spinner, LoadingSpinner, LoadingOverlay, TableSkeleton, CardSkeleton };
 export default Loading;

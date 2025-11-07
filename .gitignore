@@ -1,0 +1,9 @@
+.env
+.ss
+*.bak
+__pycahce__/
+prompt/
+containers/
+mlruns/
+*.pyc
+data/

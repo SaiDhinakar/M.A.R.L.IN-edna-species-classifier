@@ -1,69 +1,136 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Upload, Database, Dna, GitBranch, BarChart3, ArrowRight, FileText, Globe } from 'lucide-react';
+import { 
+  Search, 
+  Upload, 
+  Database, 
+  Dna, 
+  Users,
+  BarChart3, 
+  ArrowRight, 
+  Activity,
+  TrendingUp
+} from 'lucide-react';
 import Layout from '../components/Layout';
 import Card from '../components/Card';
+import Loading from '../components/Loading';
+import { datasetAPI, visualizationAPI } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
+  const { user, isAdmin } = useAuth();
+  const [stats, setStats] = useState(null);
+  const [recentDatasets, setRecentDatasets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch recent datasets first
+      const datasetsData = await datasetAPI.getDatasets({ limit: 5 });
+      const datasets = datasetsData.datasets || [];
+      setRecentDatasets(datasets);
+
+      // Get the most recent processed dataset for visualization
+      const processedDataset = datasets.find(ds => ds.status === 'completed' || ds.status === 'approved');
+      
+      if (processedDataset) {
+        // Fetch statistics from visualization API with dataset_id
+        const statsData = await visualizationAPI.getSummary(processedDataset.id);
+        setStats(statsData);
+      } else {
+        // Set default stats if no processed dataset found
+        setStats({
+          biodiversity: {
+            total_sequences: 0,
+            unique_clusters: 0,
+            shannon_index: 0,
+            simpson_index: 0,
+            taxa_richness: 0
+          },
+          top_clusters: [],
+          dataset_id: null,
+          model_version: 'N/A'
+        });
+      }
+
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      // Set default stats on error
+      setStats({
+        biodiversity: {
+          total_sequences: 0,
+          unique_clusters: 0,
+          shannon_index: 0,
+          simpson_index: 0,
+          taxa_richness: 0
+        },
+        top_clusters: [],
+        dataset_id: null,
+        model_version: 'N/A'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatNumber = (num) => {
+    if (!num) return '0';
+    return num.toLocaleString();
+  };
+
   const features = [
     {
       icon: Search,
-      title: "Search eDNA Data",
-      description: "Explore comprehensive datasets from various sources with detailed cluster analysis, sequence matching, and biodiversity insights.",
+      title: "Search & Classify",
+      description: "Classify DNA sequences using our trained model and search existing database with advanced filtering.",
       link: "/search",
       color: "blue",
-      stats: "1M+ sequences analyzed"
+      stats: stats ? `${formatNumber(stats.total_sequences)} sequences` : "Loading..."
+    },
+    {
+      icon: Database,
+      title: "Browse Databases",
+      description: "View all uploaded datasets with metadata, user information, and download options.",
+      link: "/databases",
+      color: "purple",
+      stats: stats ? `${formatNumber(stats.total_datasets)} datasets` : "Loading..."
     },
     {
       icon: Upload,
       title: "Submit Data",
-      description: "Contribute your eDNA samples and sequences to our growing database with standardized metadata and quality validation.",
+      description: "Upload your DNA sequence datasets in FASTA, FASTQ, or BLAST format for analysis.",
       link: "/submit",
       color: "green",
-      stats: "Easy submission process"
+      stats: "Easy submission"
     }
   ];
 
-  const capabilities = [
-    {
-      icon: Database,
-      title: "Reference Databases",
-      description: "Access to 16S/18S/28S ribosomal RNA sequences and viral genomes from trusted sources",
-      count: "4+ databases"
-    },
-    {
-      icon: GitBranch,
-      title: "Cluster Analysis",
-      description: "Advanced clustering algorithms for species identification and phylogenetic analysis",
-      count: "ML-powered"
-    },
-    {
-      icon: BarChart3,
-      title: "Biodiversity Metrics",
-      description: "Shannon diversity index, species richness, and novel taxa discovery analytics",
-      count: "Real-time stats"
-    },
-    {
-      icon: Globe,
-      title: "Global Coverage",
-      description: "Marine samples from Pacific, Atlantic, Arctic, and Mediterranean regions",
-      count: "Worldwide"
-    }
-  ];
+  if (loading) {
+    return (
+      <Layout>
+        <Loading.LoadingOverlay message="Loading dashboard..." />
+      </Layout>
+    );
+  }
 
   return (
     <Layout title="Overview">
       <div className="space-y-8">
-        {/* Hero Section */}
+        {/* Welcome Section */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-8 text-white">
           <div className="max-w-4xl">
             <h1 className="text-4xl font-bold mb-4">
-              M.A.R.L.IN eDNA Species Classifier
+              Welcome back, {user?.full_name || user?.username}!
             </h1>
             <p className="text-xl text-blue-100 mb-6 leading-relaxed">
-              Advanced environmental DNA analysis pipeline for marine biodiversity research. 
-              Identify species, analyze clusters, and discover new taxa from environmental samples 
-              using cutting-edge machine learning and comprehensive reference databases.
+              M.A.R.L.IN eDNA Species Classifier - Advanced environmental DNA analysis pipeline 
+              for marine biodiversity research using machine learning.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link 
@@ -71,7 +138,7 @@ const Dashboard = () => {
                 className="bg-white text-blue-600 px-6 py-3 rounded-2xl font-semibold hover:bg-blue-50 transition-colors flex items-center space-x-2"
               >
                 <Search className="h-5 w-5" />
-                <span>Start Searching</span>
+                <span>Start Classifying</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link 
@@ -85,118 +152,184 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Statistics Cards */}
+        {/* {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-blue-600 font-medium">Total Sequences</p>
+                  <p className="text-3xl font-bold text-blue-900 mt-1">
+                    {formatNumber(stats.total_sequences)}
+                  </p>
+                </div>
+                <div className="bg-blue-600 p-3 rounded-full">
+                  <Dna className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-purple-600 font-medium">Datasets</p>
+                  <p className="text-3xl font-bold text-purple-900 mt-1">
+                    {formatNumber(stats.total_datasets)}
+                  </p>
+                </div>
+                <div className="bg-purple-600 p-3 rounded-full">
+                  <Database className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-green-600 font-medium">Clusters</p>
+                  <p className="text-3xl font-bold text-green-900 mt-1">
+                    {formatNumber(stats.total_clusters)}
+                  </p>
+                </div>
+                <div className="bg-green-600 p-3 rounded-full">
+                  <Activity className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-orange-600 font-medium">Unique Taxa</p>
+                  <p className="text-3xl font-bold text-orange-900 mt-1">
+                    {formatNumber(stats.unique_taxonomy_count)}
+                  </p>
+                </div>
+                <div className="bg-orange-600 p-3 rounded-full">
+                  <TrendingUp className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </Card>
+          </div>
+        )} */}
+
         {/* Main Features */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
             const colorClasses = {
               blue: "bg-blue-100 text-blue-600 border-blue-200",
+              purple: "bg-purple-100 text-purple-600 border-purple-200",
               green: "bg-green-100 text-green-600 border-green-200"
             };
             
             return (
-              <Card key={index} className="hover:shadow-lg transition-shadow border-2 hover:border-blue-200">
-                <div className="flex items-start space-x-4">
-                  <div className={`p-4 rounded-2xl ${colorClasses[feature.color]}`}>
-                    <IconComponent className="h-8 w-8" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
-                    <p className="text-gray-600 mb-4 leading-relaxed">{feature.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500 font-medium">{feature.stats}</span>
-                      <Link 
-                        to={feature.link}
-                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 font-semibold"
-                      >
-                        <span>Get Started</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
+              <Link 
+                key={index}
+                to={feature.link}
+              >
+                <Card className="hover:shadow-lg transition-all border-2 hover:border-blue-200 h-full">
+                  <div className="flex flex-col h-full">
+                    <div className={`p-4 rounded-2xl ${colorClasses[feature.color]} w-fit mb-4`}>
+                      <IconComponent className="h-6 w-6" />
                     </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 flex-grow">
+                      {feature.description}
+                    </p>
+                    {/* <div className="flex items-center justify-between mt-auto">
+                      <span className="text-sm font-semibold text-gray-500">
+                        {feature.stats}
+                      </span>
+                      <ArrowRight className="h-5 w-5 text-blue-600" />
+                    </div> */}
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
             );
           })}
         </div>
 
-        {/* Platform Capabilities */}
-        <Card title="Platform Capabilities" subtitle="Comprehensive tools for eDNA analysis and research">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {capabilities.map((capability, index) => {
-              const IconComponent = capability.icon;
-              return (
-                <div key={index} className="text-center">
-                  <div className="bg-gray-100 p-4 rounded-2xl inline-flex mb-4">
-                    <IconComponent className="h-8 w-8 text-gray-600" />
+        {/* Recent Datasets */}
+        {recentDatasets.length > 0 && (
+          <Card>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Recent Datasets</h2>
+              <Link 
+                to="/databases"
+                className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
+              >
+                View All
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Link>
+            </div>
+            
+            <div className="space-y-4">
+              {recentDatasets.map((dataset) => (
+                <div 
+                  key={dataset.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="bg-blue-100 p-2 rounded-lg">
+                      <Database className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">
+                        {dataset.original_filename}
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        Uploaded by {dataset.owner?.username || 'Unknown'} • {dataset.num_sequences?.toLocaleString()} sequences
+                      </p>
+                    </div>
                   </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">{capability.title}</h4>
-                  <p className="text-sm text-gray-600 mb-2">{capability.description}</p>
-                  <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">
-                    {capability.count}
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    dataset.status === 'completed' ? 'bg-green-100 text-green-800' :
+                    dataset.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
+                    dataset.status === 'approved' ? 'bg-blue-100 text-blue-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {dataset.status}
                   </span>
                 </div>
-              );
-            })}
-          </div>
-        </Card>
+              ))}
+            </div>
+          </Card>
+        )}
 
-        {/* How It Works */}
-        <Card title="How It Works" subtitle="Simple workflow for eDNA analysis">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="bg-blue-100 p-4 rounded-2xl inline-flex mb-4">
-                <span className="text-2xl font-bold text-blue-600">1</span>
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Search & Explore</h4>
-              <p className="text-sm text-gray-600">
-                Browse existing datasets, filter by location, taxa, or sample type to find relevant data
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-green-100 p-4 rounded-2xl inline-flex mb-4">
-                <span className="text-2xl font-bold text-green-600">2</span>
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Analyze Results</h4>
-              <p className="text-sm text-gray-600">
-                View detailed visualizations, cluster analysis, and biodiversity metrics for your data
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-amber-100 p-4 rounded-2xl inline-flex mb-4">
-                <span className="text-2xl font-bold text-amber-600">3</span>
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Submit & Contribute</h4>
-              <p className="text-sm text-gray-600">
-                Upload your own samples to expand the database and support marine research
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Research Impact */}
-        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6 border border-green-100">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Research Impact</h3>
-            <p className="text-gray-600 mb-6 max-w-3xl mx-auto">
-              Supporting marine biodiversity research worldwide through advanced eDNA analysis, 
-              species discovery, and ecosystem monitoring for conservation efforts.
+        {/* Quick Links */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Getting Started</h3>
+            <p className="text-gray-600 mb-4">
+              New to M.A.R.L.IN? Learn how to classify sequences and explore our databases.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <div className="text-3xl font-bold text-blue-600 mb-2">1M+</div>
-                <div className="text-sm text-gray-600">Sequences Analyzed</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-green-600 mb-2">500+</div>
-                <div className="text-sm text-gray-600">Species Identified</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-purple-600 mb-2">50+</div>
-                <div className="text-sm text-gray-600">Novel Taxa Discovered</div>
-              </div>
-            </div>
-          </div>
+            <Link 
+              to="/search"
+              className="text-blue-600 hover:text-blue-700 font-medium flex items-center"
+            >
+              View Tutorial
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </Link>
+          </Card>
+
+          {isAdmin && (
+            <Card className="bg-gradient-to-br from-purple-50 to-pink-50">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Admin Panel</h3>
+              <p className="text-gray-600 mb-4">
+                Manage datasets, users, and monitor training runs.
+              </p>
+              <Link 
+                to="/settings"
+                className="text-purple-600 hover:text-purple-700 font-medium flex items-center"
+              >
+                Go to Admin Panel
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Link>
+            </Card>
+          )}
         </div>
       </div>
     </Layout>
